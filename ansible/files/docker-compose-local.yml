@@ -1,27 +1,27 @@
-mysql:
-    image: mysql
+postgres:
+    image: postgres:9.5
     restart: always
-    mem_limit: 2147483648
+    volumes:
+        - /var/lib/postgresql/data:/var/lib/postgresql/data
     ports:
-        - "3306:3306"
+        - "5432:5432"
     environment:
-        - MYSQL_RANDOM_ROOT_PASSWORD=true
-        - MYSQL_USER=airflow
-        - MYSQL_PASSWORD=airflow
-        - MYSQL_DATABASE=airflow
+        - POSTGRES_USER=airflow
+        - POSTGRES_PASSWORD=airflow
+        - POSTGRES_DB=airflow
 
 webserver:
     links:
-        - mysql:mysql
+        - postgres:postgres
 
 scheduler:
     links:
-        - mysql:mysql
+        - postgres:postgres
 
 worker:
     links:
-        - mysql:mysql
+        - postgres:postgres
 
 flower:
     links:
-        - mysql:mysql
+        - postgres:postgres

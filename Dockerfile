@@ -1,18 +1,19 @@
 # AUTHOR: Roberto Vitillo
 # DESCRIPTION: Mozilla's Airflow container
-# BUILD: docker build --rm -t mozdata/telemetry-airflow
-# SOURCE: https://github.com/mozilla/telemetry-airflow
+# BUILD: docker build --rm -t okibot/opentrials-airflow
+# SOURCE: https://github.com/opentrials/opentrials-airflow
 
 FROM puckel/docker-airflow:1.7.1.3
-MAINTAINER vitillo
+MAINTAINER okibot
 
 USER root
 RUN apt-get update -yqq && \
-    apt-get install -yqq python-pip python-mysqldb && \
+    apt-get install -yqq python-pip && \
     pip install boto3 && \
     pip install airflow[async] && \
     pip install airflow[password] && \
-    pip install retrying
+    pip install retrying && \
+    pip install docker-py
 
 ADD ansible/files/airflow/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 ADD ansible/files/airflow/entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh

@@ -1,32 +1,28 @@
-# telemetry-airflow
+# opentrials-airflow
+
 Airflow is a platform to programmatically author, schedule and monitor workflows.
 
 When workflows are defined as code, they become more maintainable, versionable, testable, and collaborative.
 
 Use Airflow to author workflows as directed acyclic graphs (DAGs) of tasks. The Airflow scheduler executes your tasks on an array of workers while following the specified dependencies. Rich command line utilities make performing complex surgeries on DAGs a snap. The rich user interface makes it easy to visualize pipelines running in production, monitor progress, and troubleshoot issues when needed.
 
-### Prerequisites
-
-This app is built and deployed with [docker](https://docs.docker.com/engine/installation/) and [ansible](http://docs.ansible.com/ansible/intro_installation.html).
-
 ### Build Container
 
 An Airflow container can be built with 
 
 ```bash
-docker build -t mozdata/telemetry-airflow .
+docker build -t okibot/opentrials-airflow .
 ```
 
 and pushed to Docker hub with
 ```bash
-docker push mozdata/telemetry-airflow
+docker push okibot/opentrials-airflow
 ```
 
 ### Testing
 
 A single task, e.g. `spark`, of an Airflow dag, e.g. `example`, can be run with an execution date, e.g. `2016-01-01`, in the `dev` environment with:
 ```bash
-AWS_SECRET_ACCESS_KEY=... AWS_ACCESS_KEY_ID=... \
 ansible-playbook ansible/deploy_local.yml -e '@ansible/envs/dev.yml' -e "command='test example spark 20160101'"
 ```
 
@@ -40,18 +36,18 @@ docker logs -f files_scheduler_1
 
 ### Local Deployment
 
-Assuming you are on OS X and using docker toolbox, first create a docker machine with a sufficient amount of memory with e.g.:
+Assuming you are on OS X, first create a docker machine with a sufficient amount of memory with e.g.:
 ```bash
 docker-machine create -d virtualbox --virtualbox-memory 4096 default
 ```
-
-If you're using OS X and the new Docker for OS X, start the docker service, click the docker icon in the tray, click on preferences and change the available memory to 4GB.
 
 To deploy the Airflow container on the docker engine, with its required dependencies, run:
 ```bash
 ansible-playbook ansible/deploy_local.yml -e '@ansible/envs/dev.yml'
 echo "Airflow web console should now be running locally at http://$(docker-machine ip default):8080"
 ```
+
+Note that this will start running all the DAGs with a start date in the past! To avoid that do not pass the AWS credentials.
 
 If you get a message saying "Couldn't connect to Docker daemon - you might need to run `docker-machine start default`.", try the following:
 ```bash
@@ -61,21 +57,7 @@ eval "$(docker-machine env default)"
 
 You can now connect to your local Airflow web console with a URL like `http://192.168.99.100:8080` (see above for how to identify the exact IP address).
 
-### Remote Deployment
-
-In order to deploy Airflow to e.g. the `stage` environment, an ECS cluster has to be created first with at least one container instance:
-```bash
-ansible-playbook ansible/provision_aws.yml -e '@ansible/envs/stage.yml'
-```
-
-Once the ECS cluster is up and running, Airflow can be (re)deployed with:
-```bash
-ansible-playbook ansible/deploy_aws.yml -e '@ansible/envs/stage.yml'
-```
-
 ### Debugging
-
-If you get an error about `ecs-cli` missing, follow [these steps](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html) to install it.
 
 Some useful docker tricks for development and debugging:
 
@@ -117,7 +99,11 @@ docker volume rm $(docker volume ls -qf dangling=true)
 
 ### Triggering backfill tasks using the CLI
 
-- SSH in to the ECS container instance
+- SSH in to the server
 - List docker containers using `docker ps`
 - Log in to one of the docker containers using `docker exec -it <container_id> bash`. The webserver instance is a good choice.
 - Run the desired backfill command, something like `$ airflow backfill main_summary -s 2016-06-20 -e 2016-06-26`
+
+### Credits
+
+This repository is heavily based on https://github.com/mozilla/telemetry-airflow

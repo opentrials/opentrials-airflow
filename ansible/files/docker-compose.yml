@@ -10,25 +10,15 @@ rabbitmq:
         - RABBITMQ_DEFAULT_VHOST=airflow
 
 webserver:
-    image: mozdata/telemetry-airflow
+    image: okibot/opentrials-airflow
     restart: always
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
-        - AWS_REGION
-        - EMR_KEY_NAME
-        - EMR_FLOW_ROLE
-        - EMR_SERVICE_ROLE
-        - EMR_INSTANCE_TYPE
-        - SPARK_BUCKET
-        - AIRFLOW_BUCKET
-        - PRIVATE_OUTPUT_BUCKET
-        - PUBLIC_OUTPUT_BUCKET
-        - AWS_ACCESS_KEY_ID
-        - AWS_SECRET_ACCESS_KEY
         - DB_URI
         - DB_USER
         - DB_PASSWORD
+        - DB_TABLE
         - SMTP_HOST
         - SMTP_USER
         - SMTP_PASSWORD
@@ -41,25 +31,15 @@ webserver:
     command: webserver
 
 flower:
-    image: mozdata/telemetry-airflow
+    image: okibot/opentrials-airflow
     restart: always
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
-        - AWS_REGION
-        - EMR_KEY_NAME
-        - EMR_FLOW_ROLE
-        - EMR_SERVICE_ROLE
-        - EMR_INSTANCE_TYPE
-        - SPARK_BUCKET
-        - AIRFLOW_BUCKET
-        - PRIVATE_OUTPUT_BUCKET
-        - PUBLIC_OUTPUT_BUCKET
-        - AWS_ACCESS_KEY_ID
-        - AWS_SECRET_ACCESS_KEY
         - DB_URI
         - DB_USER
         - DB_PASSWORD
+        - DB_TABLE
         - SMTP_HOST
         - SMTP_USER
         - SMTP_PASSWORD
@@ -70,27 +50,16 @@ flower:
     command: flower
 
 scheduler:
-    image: mozdata/telemetry-airflow
+    image: okibot/opentrials-airflow
     restart: always
-    mem_limit: 2147483648
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
-        - AWS_REGION
-        - EMR_KEY_NAME
-        - EMR_FLOW_ROLE
-        - EMR_SERVICE_ROLE
-        - EMR_INSTANCE_TYPE
-        - SPARK_BUCKET
-        - AIRFLOW_BUCKET
-        - PRIVATE_OUTPUT_BUCKET
-        - PUBLIC_OUTPUT_BUCKET
         - COMMAND
-        - AWS_ACCESS_KEY_ID
-        - AWS_SECRET_ACCESS_KEY
         - DB_URI
         - DB_USER
         - DB_PASSWORD
+        - DB_TABLE
         - SMTP_HOST
         - SMTP_USER
         - SMTP_PASSWORD
@@ -98,30 +67,19 @@ scheduler:
         - rabbitmq:rabbitmq
 
 worker:
-    image: mozdata/telemetry-airflow
+    image: okibot/opentrials-airflow
     restart: always
-    mem_limit: 2147483648
-    environment:
-        - AIRFLOW_HOME=/usr/local/airflow
     ports:
         - "8793:8793"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
-        - AWS_REGION
-        - EMR_KEY_NAME
-        - EMR_FLOW_ROLE
-        - EMR_SERVICE_ROLE
-        - EMR_INSTANCE_TYPE
-        - SPARK_BUCKET
-        - AIRFLOW_BUCKET
-        - PRIVATE_OUTPUT_BUCKET
-        - PUBLIC_OUTPUT_BUCKET
-        - AWS_ACCESS_KEY_ID
-        - AWS_SECRET_ACCESS_KEY
         - DB_URI
         - DB_USER
         - DB_PASSWORD
+        - DB_TABLE
         - SMTP_HOST
         - SMTP_USER
         - SMTP_PASSWORD
