@@ -71,6 +71,8 @@ worker:
     restart: always
     ports:
         - "8793:8793"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
