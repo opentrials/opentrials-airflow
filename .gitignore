@@ -4,3 +4,4 @@
 *.un~
 venv
 *.swp
+.tox
