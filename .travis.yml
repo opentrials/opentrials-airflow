@@ -1,0 +1,11 @@
+language: python
+
+python: 3.5
+
+env:
+    - TOXENV="py${PYTHON_VERSION//./}"
+
+install:
+    - pip install tox
+
+script: tox
