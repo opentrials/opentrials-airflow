@@ -1,1 +1,2 @@
 # TODO: configure production environment
+airflow_enable_auth: true
