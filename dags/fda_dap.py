@@ -1,7 +1,7 @@
 import datetime
 from airflow.operators.docker_operator import DockerOperator
 from airflow.models import DAG, Variable
-from .utils import helpers
+import utils.helpers as helpers
 
 
 args = {
