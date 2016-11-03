@@ -1,1 +1,4 @@
-airflow==1.7.1.3
+airflow[async,password]==1.7.1.3
+docker-py==1.10.4
+boto3==1.4.1
+retrying==1.3.3
