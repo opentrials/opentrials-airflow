@@ -20,7 +20,8 @@ while ! curl -sI -u $RABBITMQ_CREDS http://$RABBITMQ_HOST:15672/api/whoami |grep
 done
 
 # Generate Fernet key for replacement below
-export FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print FERNET_KEY")
+export DEFAULT_FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print FERNET_KEY")
+export FERNET_KEY=${FERNET_KEY:-$DEFAULT_FERNET_KEY}
 
 # Replace environment vars in airflow config file.
 python $AIRFLOW_HOME/replace_env.py $AIRFLOW_HOME/airflow.cfg
