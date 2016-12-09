@@ -2,9 +2,6 @@ import datetime
 from airflow.operators.docker_operator import DockerOperator
 from airflow.models import DAG, Variable
 import utils.helpers as helpers
-import socket
-
-postgres_uri = socket.gethostbyname('postgres')
 
 args = {
     'owner': 'airflow',
