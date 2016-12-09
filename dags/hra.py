@@ -2,7 +2,9 @@ import datetime
 from airflow.operators.docker_operator import DockerOperator
 from airflow.models import DAG, Variable
 import utils.helpers as helpers
+import socket
 
+postgres_uri = socket.gethostbyname('postgres')
 
 args = {
     'owner': 'airflow',
@@ -11,13 +13,13 @@ args = {
     'retries': 1,
 }
 
-dag = DAG(dag_id='fda_dap',
+dag = DAG(dag_id='hra',
           default_args=args,
           max_active_runs=1,
           schedule_interval='@monthly')
 
 collector_task = DockerOperator(
-    task_id='fda_dap_collector',
+    task_id='hra_collector',
     dag=dag,
     image='okibot/collectors:latest',
     force_pull=True,
@@ -25,12 +27,13 @@ collector_task = DockerOperator(
         'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
         'PYTHON_ENV': Variable.get('ENV'),
+        'DOWNLOAD_DELAY': Variable.get('DOWNLOAD_DELAY'),
     },
-    command='make start fda_dap'
+    command='make start hra'
 )
 
 processor_task = DockerOperator(
-    task_id='fda_dap_processor',
+    task_id='hra_processor',
     dag=dag,
     image='okibot/processors:latest',
     force_pull=True,
@@ -39,20 +42,12 @@ processor_task = DockerOperator(
         'DATABASE_URL': helpers.get_postgres_uri('api_db'),
         'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
-        'AWS_ACCESS_KEY_ID': Variable.get('AWS_ACCESS_KEY_ID'),
-        'AWS_SECRET_ACCESS_KEY': Variable.get('AWS_SECRET_ACCESS_KEY'),
-        'AWS_S3_BUCKET': Variable.get('AWS_S3_BUCKET'),
-        'AWS_S3_REGION': Variable.get('AWS_S3_REGION'),
-        'AWS_S3_CUSTOM_DOMAIN': Variable.get('AWS_S3_CUSTOM_DOMAIN'),
-        'DOCUMENTCLOUD_USERNAME': Variable.get('DOCUMENTCLOUD_USERNAME'),
-        'DOCUMENTCLOUD_PASSWORD': Variable.get('DOCUMENTCLOUD_PASSWORD'),
-        'DOCUMENTCLOUD_PROJECT': Variable.get('DOCUMENTCLOUD_PROJECT'),
     },
-    command='make start fda_dap'
+    command='make start hra'
 )
 
-documentcloud_task = DockerOperator(
-    task_id='send_fda_docs_to_documentcloud',
+hra_linker_task = DockerOperator(
+    task_id='hra_linker',
     dag=dag,
     image='okibot/processors:latest',
     force_pull=True,
@@ -61,12 +56,10 @@ documentcloud_task = DockerOperator(
         'DATABASE_URL': helpers.get_postgres_uri('api_db'),
         'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
-        'DOCUMENTCLOUD_USERNAME': Variable.get('DOCUMENTCLOUD_USERNAME'),
-        'DOCUMENTCLOUD_PASSWORD': Variable.get('DOCUMENTCLOUD_PASSWORD'),
-        'DOCUMENTCLOUD_PROJECT': Variable.get('DOCUMENTCLOUD_PROJECT'),
     },
-    command='make start send_fda_docs_to_documentcloud'
+    command='make start hra_linker'
+
 )
 
 processor_task.set_upstream(collector_task)
-documentcloud_task.set_upstream(processor_task)
+hra_linker_task.set_upstream(processor_task)
