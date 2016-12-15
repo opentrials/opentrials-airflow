@@ -21,13 +21,13 @@ collector_task = DockerOperator(
     dag=dag,
     image='okibot/collectors:latest',
     force_pull=True,
+    api_version='1.23',
     environment={
         'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
         'COCHRANE_ARCHIVE_URL': Variable.get('COCHRANE_ARCHIVE_URL'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
         'PYTHON_ENV': Variable.get('ENV'),
         'FERNET_KEY': os.environ['FERNET_KEY'],
-        'DOCKER_API_VERSION': Variable.get('DOCKER_API_VERSION'),
     },
     command='make start cochrane_reviews'
 )
@@ -37,13 +37,13 @@ processor_task = DockerOperator(
     dag=dag,
     image='okibot/processors:latest',
     force_pull=True,
+    api_version='1.23',
     environment={
         'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
         'DATABASE_URL': helpers.get_postgres_uri('api_db'),
         'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
         'FERNET_KEY': os.environ['FERNET_KEY'],
-        'DOCKER_API_VERSION': Variable.get('DOCKER_API_VERSION'),
     },
     command='make start cochrane_reviews'
 )
