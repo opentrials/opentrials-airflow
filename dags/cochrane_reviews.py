@@ -2,6 +2,7 @@ from datetime import datetime
 from airflow.operators.docker_operator import DockerOperator
 from airflow.models import DAG, Variable
 import utils.helpers as helpers
+import os
 
 args = {
     'owner': 'airflow',
@@ -25,6 +26,7 @@ collector_task = DockerOperator(
         'COCHRANE_ARCHIVE_URL': Variable.get('COCHRANE_ARCHIVE_URL'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
         'PYTHON_ENV': Variable.get('ENV'),
+        'FERNET_KEY': os.environ['FERNET_KEY'],
     },
     command='make start cochrane_reviews'
 )
@@ -39,6 +41,7 @@ processor_task = DockerOperator(
         'DATABASE_URL': helpers.get_postgres_uri('api_db'),
         'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
+        'FERNET_KEY': os.environ['FERNET_KEY'],
     },
     command='make start cochrane_reviews'
 )
