@@ -27,6 +27,7 @@ collector_task = DockerOperator(
         'LOGGING_URL': Variable.get('LOGGING_URL'),
         'PYTHON_ENV': Variable.get('ENV'),
         'FERNET_KEY': os.environ['FERNET_KEY'],
+        'DOCKER_API_VERSION': Variable.get('DOCKER_API_VERSION'),
     },
     command='make start cochrane_reviews'
 )
@@ -42,6 +43,7 @@ processor_task = DockerOperator(
         'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
         'FERNET_KEY': os.environ['FERNET_KEY'],
+        'DOCKER_API_VERSION': Variable.get('DOCKER_API_VERSION'),
     },
     command='make start cochrane_reviews'
 )
