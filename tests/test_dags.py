@@ -6,8 +6,9 @@ import airflow.models
 class TestDAGS(object):
     def test_it_can_be_imported(self, dagbag):
         is_sql_error = lambda err: err.startswith('(sqlite3.OperationalError)')  # noqa: E731
-        import_errors = [errors for errors in dagbag.import_errors.values()
-                         if not is_sql_error(errors)]
+        is_conn_error = lambda err: err.startswith('The conn_id')  # noqa: E731
+        import_errors = [error for error in dagbag.import_errors.values()
+                         if not is_sql_error(error) and not is_conn_error(error)]
 
         assert not import_errors
 

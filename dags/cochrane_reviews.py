@@ -1,51 +1,29 @@
 from datetime import datetime
-from airflow.operators.docker_operator import DockerOperator
-from airflow.models import DAG, Variable
+from airflow.models import DAG
 import utils.helpers as helpers
-import os
 
 args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.strptime('Dec 1 2016', '%b %d %Y'),
+    'start_date': datetime(2016, 12, 1),
     'retries': 1,
 }
 
-dag = DAG(dag_id='cochrane_reviews',
-          default_args=args,
-          max_active_runs=1,
-          schedule_interval='@monthly')
-
-collector_task = DockerOperator(
-    task_id='cochrane_reviews_collector',
-    dag=dag,
-    image='okibot/collectors:latest',
-    force_pull=True,
-    api_version='1.23',
-    environment={
-        'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
-        'COCHRANE_ARCHIVE_URL': Variable.get('COCHRANE_ARCHIVE_URL'),
-        'LOGGING_URL': Variable.get('LOGGING_URL'),
-        'PYTHON_ENV': Variable.get('ENV'),
-        'FERNET_KEY': os.environ['FERNET_KEY'],
-    },
-    command='make start cochrane_reviews'
+dag = DAG(
+    dag_id='cochrane_reviews',
+    default_args=args,
+    max_active_runs=1,
+    schedule_interval='@monthly'
 )
 
-processor_task = DockerOperator(
-    task_id='cochrane_reviews_processor',
-    dag=dag,
-    image='okibot/processors:latest',
-    force_pull=True,
-    api_version='1.23',
-    environment={
-        'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
-        'DATABASE_URL': helpers.get_postgres_uri('api_db'),
-        'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
-        'LOGGING_URL': Variable.get('LOGGING_URL'),
-        'FERNET_KEY': os.environ['FERNET_KEY'],
-    },
-    command='make start cochrane_reviews'
+collector_task = helpers.create_collector_task(
+    name='cochrane_reviews',
+    dag=dag
+)
+
+processor_task = helpers.create_processor_task(
+    name='cochrane_reviews',
+    dag=dag
 )
 
 processor_task.set_upstream(collector_task)

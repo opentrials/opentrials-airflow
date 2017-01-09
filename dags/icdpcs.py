@@ -1,46 +1,29 @@
-import datetime
-from airflow.operators.docker_operator import DockerOperator
-from airflow.models import DAG, Variable
+from datetime import datetime
+from airflow.models import DAG
 import utils.helpers as helpers
 
 args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.datetime.utcnow(),
+    'start_date': datetime(2016, 12, 1),
     'retries': 1,
 }
 
-dag = DAG(dag_id='icdpcs',
-          default_args=args,
-          max_active_runs=1,
-          schedule_interval='@monthly')
-
-collector_task = DockerOperator(
-    task_id='icdpcs_collector',
-    dag=dag,
-    image='okibot/collectors:latest',
-    force_pull=True,
-    environment={
-        'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
-        'LOGGING_URL': Variable.get('LOGGING_URL'),
-        'PYTHON_ENV': Variable.get('ENV'),
-        'DOWNLOAD_DELAY': Variable.get('DOWNLOAD_DELAY'),
-    },
-    command='make start icdpcs'
+dag = DAG(
+    dag_id='icdpcs',
+    default_args=args,
+    max_active_runs=1,
+    schedule_interval='@monthly'
 )
 
-processor_task = DockerOperator(
-    task_id='icdpcs_processor',
-    dag=dag,
-    image='okibot/processors:latest',
-    force_pull=True,
-    environment={
-        'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
-        'DATABASE_URL': helpers.get_postgres_uri('api_db'),
-        'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
-        'LOGGING_URL': Variable.get('LOGGING_URL'),
-    },
-    command='make start icdpcs'
+collector_task = helpers.create_collector_task(
+    name='icdpcs',
+    dag=dag
+)
+
+processor_task = helpers.create_processor_task(
+    name='icdpcs',
+    dag=dag
 )
 
 processor_task.set_upstream(collector_task)

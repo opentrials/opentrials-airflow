@@ -1,61 +1,34 @@
-import datetime
-from airflow.operators.docker_operator import DockerOperator
-from airflow.models import DAG, Variable
+from datetime import datetime
+from airflow.models import DAG
 import utils.helpers as helpers
 
 args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.datetime.utcnow(),
+    'start_date': datetime(2016, 12, 1),
     'retries': 1,
 }
 
-dag = DAG(dag_id='euctr',
-          default_args=args,
-          max_active_runs=1,
-          schedule_interval='@monthly')
-
-collector_task = DockerOperator(
-    task_id='euctr_collector',
-    dag=dag,
-    image='okibot/collectors:latest',
-    force_pull=True,
-    environment={
-        'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
-        'LOGGING_URL': Variable.get('LOGGING_URL'),
-        'PYTHON_ENV': Variable.get('ENV'),
-        'DOWNLOAD_DELAY': Variable.get('DOWNLOAD_DELAY'),
-    },
-    command='make start euctr'
+dag = DAG(
+    dag_id='euctr',
+    default_args=args,
+    max_active_runs=1,
+    schedule_interval='@monthly'
 )
 
-processor_task = DockerOperator(
-    task_id='euctr_processor',
-    dag=dag,
-    image='okibot/processors:latest',
-    force_pull=True,
-    environment={
-        'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
-        'DATABASE_URL': helpers.get_postgres_uri('api_db'),
-        'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
-        'LOGGING_URL': Variable.get('LOGGING_URL'),
-    },
-    command='make start euctr'
+collector_task = helpers.create_collector_task(
+    name='euctr',
+    dag=dag
 )
 
-merge_trials_identifiers_task = DockerOperator(
-    task_id='merge_trials_identifiers',
-    dag=dag,
-    image='okibot/processors:latest',
-    force_pull=True,
-    environment={
-        'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
-        'DATABASE_URL': helpers.get_postgres_uri('api_db'),
-        'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
-        'LOGGING_URL': Variable.get('LOGGING_URL'),
-    },
-    command='make start merge_trials_identifiers'
+processor_task = helpers.create_processor_task(
+    name='euctr',
+    dag=dag
+)
 
+merge_trials_identifiers_task = helpers.create_processor_task(
+    name='merge_trials_identifiers',
+    dag=dag
 )
 
 processor_task.set_upstream(collector_task)

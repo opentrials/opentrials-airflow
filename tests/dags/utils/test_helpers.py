@@ -26,3 +26,23 @@ class TestGetPostgresUriHelper(object):
 
         uri = helpers.get_postgres_uri('connection')
         assert ':5432' in uri
+
+
+class TestCreateTasks(object):
+    def test_create_collector_task_returns_tasks_with_correct_options(self):
+        dag = None
+        with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):
+            task = helpers.create_collector_task('foo', dag)
+
+        assert task.task_id == 'collector_foo'
+        assert task.image == 'okibot/collectors:latest'
+        assert task.force_pull
+
+    def test_create_processor_task_returns_tasks_with_correct_options(self):
+        dag = None
+        with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):
+            task = helpers.create_processor_task('foo', dag)
+
+        assert task.task_id == 'processor_foo'
+        assert task.image == 'okibot/processors:latest'
+        assert task.force_pull
