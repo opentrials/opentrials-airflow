@@ -6,7 +6,7 @@ import sys
 
 nargs = len(sys.argv)
 if nargs < 2 or nargs > 3:
-    print "Usage: python {} input_file [ output_file ]".format(sys.argv[0])
+    print("Usage: python {} input_file [ output_file ]".format(sys.argv[0]))
     sys.exit(1)
 
 input_file = sys.argv[1]

@@ -15,6 +15,7 @@ webserver:
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
+        - FERNET_KEY
         - DB_URI
         - DB_USER
         - DB_PASSWORD
@@ -36,6 +37,7 @@ flower:
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
+        - FERNET_KEY
         - DB_URI
         - DB_USER
         - DB_PASSWORD
@@ -55,6 +57,7 @@ scheduler:
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
+        - FERNET_KEY
         - COMMAND
         - DB_URI
         - DB_USER
@@ -76,6 +79,7 @@ worker:
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
         - AIRFLOW_ENABLE_AUTH
+        - FERNET_KEY
         - DB_URI
         - DB_USER
         - DB_PASSWORD
