@@ -1,6 +1,6 @@
 # opentrials-airflow
 
-[![Build Status](https://travis-ci.org/opentrials/opentrials-airflow.svg)](https://travis-ci.org/opentrials/opentrials-airflow)
+[![Build Status](https://travis-ci.org/opentrials/opentrials-airflow.svg?branch=master)](https://travis-ci.org/opentrials/opentrials-airflow)
 
 Airflow is a platform to programmatically author, schedule and monitor workflows.
 
