@@ -23,5 +23,6 @@ sleep_task = DockerOperator(
     task_id='sleep',
     dag=dag,
     image='alpine:latest',
+    api_version=os.environ.get('DOCKER_API_VERSION', '1.23'),
     command='sleep 5'
 )
