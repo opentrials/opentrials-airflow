@@ -1,4 +1,5 @@
 # Smoke test to make sure we can run Docker containers
+import os
 from datetime import datetime, timedelta
 from airflow.models import DAG
 from airflow.operators.docker_operator import DockerOperator
