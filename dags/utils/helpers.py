@@ -47,7 +47,8 @@ def _create_task(task_id, dag, image, command, environment):
         'PYTHON_ENV': airflow.models.Variable.get('ENV'),
         'LOGGING_URL': airflow.models.Variable.get('LOGGING_URL'),
         'DOWNLOAD_DELAY': airflow.models.Variable.get('DOWNLOAD_DELAY'),
-    }.update(environment)
+    }
+    env.update(environment)
     docker_api_version = os.environ.get('DOCKER_API_VERSION', '1.23')
 
     return DockerOperator(
