@@ -18,7 +18,8 @@ dag = DAG(
 
 collector_task = helpers.create_collector_task(
     name='jprn',
-    dag=dag
+    dag=dag,
+    command='make start jprn 1 100000'
 )
 
 processor_task = helpers.create_processor_task(

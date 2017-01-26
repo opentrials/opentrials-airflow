@@ -48,6 +48,14 @@ class TestCreateTasks(object):
         assert task.force_pull
         assert sorted(task.environment.keys()) == sorted(self.DEFAULT_ENV_KEYS)
 
+    def test_create_collector_task_allows_changing_command(self):
+        dag = None
+        command = 'sleep'
+        with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):
+            task = helpers.create_collector_task('foo', dag, command)
+
+        assert task.command == command
+
     def test_create_processor_task_returns_tasks_with_correct_options(self):
         dag = None
         with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):

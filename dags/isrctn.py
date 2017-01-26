@@ -17,12 +17,13 @@ dag = DAG(
 )
 
 collector_task = helpers.create_collector_task(
-    name='irctn',
-    dag=dag
+    name='isrctn',
+    dag=dag,
+    command='make start isrctn 2001-01-01'
 )
 
 processor_task = helpers.create_processor_task(
-    name='irctn',
+    name='isrctn',
     dag=dag
 )
 
