@@ -19,22 +19,26 @@ def get_postgres_uri(name):
     )
 
 
-def create_collector_task(name, dag, environment=None):
+def create_collector_task(name, dag, command=None, environment=None):
+    default_command = 'make start {}'.format(name)
+
     return _create_task(
         task_id='collector_{}'.format(name),
         dag=dag,
         image='okibot/collectors:latest',
-        command='make start {}'.format(name),
+        command=command or default_command,
         environment=environment or {},
     )
 
 
-def create_processor_task(name, dag, environment=None):
+def create_processor_task(name, dag, command=None, environment=None):
+    default_command = 'make start {}'.format(name)
+
     return _create_task(
         task_id='processor_{}'.format(name),
         dag=dag,
         image='okibot/processors:latest',
-        command='make start {}'.format(name),
+        command=command or default_command,
         environment=environment or {},
     )
 

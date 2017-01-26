@@ -18,7 +18,8 @@ dag = DAG(
 
 collector_task = helpers.create_collector_task(
     name='actrn',
-    dag=dag
+    dag=dag,
+    command='make start actrn 2001-01-01'
 )
 
 processor_task = helpers.create_processor_task(

@@ -17,12 +17,13 @@ dag = DAG(
 )
 
 collector_task = helpers.create_collector_task(
-    name='pubmed_collector',
-    dag=dag
+    name='pubmed',
+    dag=dag,
+    command='make start pubmed 1900-01-01 2100-01-01'
 )
 
 processor_task = helpers.create_processor_task(
-    name='pubmed_processor',
+    name='pubmed',
     dag=dag
 )
 
