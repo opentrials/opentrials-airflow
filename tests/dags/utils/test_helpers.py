@@ -29,6 +29,15 @@ class TestGetPostgresUriHelper(object):
 
 
 class TestCreateTasks(object):
+    DEFAULT_ENV_KEYS = [
+        'WAREHOUSE_URL',
+        'DATABASE_URL',
+        'EXPLORERDB_URL',
+        'PYTHON_ENV',
+        'LOGGING_URL',
+        'DOWNLOAD_DELAY',
+    ]
+
     def test_create_collector_task_returns_tasks_with_correct_options(self):
         dag = None
         with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):
@@ -37,6 +46,7 @@ class TestCreateTasks(object):
         assert task.task_id == 'collector_foo'
         assert task.image == 'okibot/collectors:latest'
         assert task.force_pull
+        assert sorted(task.environment.keys()) == sorted(self.DEFAULT_ENV_KEYS)
 
     def test_create_processor_task_returns_tasks_with_correct_options(self):
         dag = None
@@ -46,3 +56,4 @@ class TestCreateTasks(object):
         assert task.task_id == 'processor_foo'
         assert task.image == 'okibot/processors:latest'
         assert task.force_pull
+        assert sorted(task.environment.keys()) == sorted(self.DEFAULT_ENV_KEYS)
