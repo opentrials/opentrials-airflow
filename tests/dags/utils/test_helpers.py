@@ -36,6 +36,7 @@ class TestCreateTasks(object):
         'PYTHON_ENV',
         'LOGGING_URL',
         'DOWNLOAD_DELAY',
+        'SENTRY_DSN',
     ]
 
     def test_create_collector_task_returns_tasks_with_correct_options(self):
