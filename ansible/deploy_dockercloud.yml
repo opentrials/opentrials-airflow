@@ -1,0 +1,25 @@
+- name: deploy Airflow containers to Docker Cloud
+  hosts: localhost
+  vars:
+    dockercloud_conf: "{{ playbook_dir }}/files/docker-cloud.yml"
+  environment:
+    DOCKERCLOUD_USER: "{{ dockercloud_user }}"
+    DOCKERCLOUD_PASS: "{{ dockercloud_pass }}"
+    DOCKERCLOUD_NAMESPACE: "{{ dockercloud_namespace }}"
+
+  tasks:
+    - name: create Docker Cloud stack if needed
+      shell: docker-cloud stack inspect airflow || docker-cloud stack create --sync -n airflow
+
+    - name: launch Airflow containers
+      shell: docker-cloud stack update --sync airflow -f {{ dockercloud_conf }}
+      environment:
+        DB_URI: "{{ db_uri }}"
+        DB_USER: "{{ db_user }}"
+        DB_PASSWORD: "{{ db_password }}"
+        DB_TABLE: "{{ db_table }}"
+        AIRFLOW_ENABLE_AUTH: True
+        SMTP_HOST: "{{ smtp_host }}"
+        SMTP_USER: "{{ smtp_user }}"
+        SMTP_PASSWORD: "{{ smtp_password }}"
+        FERNET_KEY: "{{ fernet_key }}"

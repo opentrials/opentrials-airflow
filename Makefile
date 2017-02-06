@@ -1,4 +1,4 @@
-.PHONY: build start stop
+.PHONY: build start stop deploy
 
 all: build start
 
@@ -10,3 +10,6 @@ start: stop
 
 stop:
 	docker-compose -f ./ansible/files/docker-compose.yml -f ./ansible/files/docker-compose-local.yml stop
+
+deploy:
+	ansible-playbook ansible/deploy_dockercloud.yml --vault-password-file .vault_pass -e '@ansible/envs/production.yml'

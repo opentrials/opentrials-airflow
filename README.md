@@ -59,6 +59,16 @@ eval "$(docker-machine env default)"
 
 You can now connect to your local Airflow web console with a URL like `http://192.168.99.100:8080` (see above for how to identify the exact IP address).
 
+### Production Deployment
+
+To deploy to our Docker Cloud, run:
+```bash
+make deploy
+```
+
+This requires the Vault's password file to be located on `./.vault_pass`, so
+Ansible is able to decrypt the production variables.
+
 ### Debugging
 
 Some useful docker tricks for development and debugging:

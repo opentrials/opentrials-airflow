@@ -1,0 +1,91 @@
+rabbitmq:
+  image: 'rabbitmq:3-management'
+  restart: always
+  ports:
+    - '5672:5672'
+    - '15672:15672'
+  environment:
+    - RABBITMQ_DEFAULT_PASS=airflow
+    - RABBITMQ_DEFAULT_USER=airflow
+    - RABBITMQ_DEFAULT_VHOST=airflow
+
+webserver:
+  image: 'opentrials/opentrials-airflow:latest'
+  restart: always
+  environment:
+    - AIRFLOW_HOME=/usr/local/airflow
+    - AIRFLOW_ENABLE_AUTH=true
+    - FERNET_KEY
+    - DB_URI
+    - DB_USER
+    - DB_PASSWORD
+    - DB_TABLE
+    - SMTP_HOST
+    - SMTP_USER
+    - SMTP_PASSWORD
+  ports:
+    - '80:8080'
+  links:
+    - rabbitmq
+    - scheduler
+    - worker
+  command: webserver
+
+flower:
+  image: 'opentrials/opentrials-airflow:latest'
+  restart: always
+  environment:
+    - AIRFLOW_HOME=/usr/local/airflow
+    - AIRFLOW_ENABLE_AUTH=true
+    - FERNET_KEY
+    - DB_URI
+    - DB_USER
+    - DB_PASSWORD
+    - DB_TABLE
+    - SMTP_HOST
+    - SMTP_USER
+    - SMTP_PASSWORD
+  links:
+    - rabbitmq
+  ports:
+    - '5555:5555'
+  command: flower
+
+scheduler:
+  image: 'opentrials/opentrials-airflow:latest'
+  restart: always
+  environment:
+    - AIRFLOW_HOME=/usr/local/airflow
+    - AIRFLOW_ENABLE_AUTH=true
+    - FERNET_KEY
+    - DB_URI
+    - DB_USER
+    - DB_PASSWORD
+    - DB_TABLE
+    - SMTP_HOST
+    - SMTP_USER
+    - SMTP_PASSWORD
+  links:
+    - rabbitmq
+
+worker:
+  image: 'opentrials/opentrials-airflow:latest'
+  restart: always
+  ports:
+    - '8793:8793'
+  volumes:
+    - '/var/run/docker.sock:/var/run/docker.sock'
+  environment:
+    - AIRFLOW_HOME=/usr/local/airflow
+    - AIRFLOW_ENABLE_AUTH=true
+    - FERNET_KEY
+    - DB_URI
+    - DB_USER
+    - DB_PASSWORD
+    - DB_TABLE
+    - SMTP_HOST
+    - SMTP_USER
+    - SMTP_PASSWORD
+  links:
+    - rabbitmq
+  command: worker
