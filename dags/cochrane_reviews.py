@@ -1,5 +1,5 @@
 from datetime import datetime
-from airflow.models import DAG
+import airflow.models
 import utils.helpers as helpers
 
 args = {
@@ -9,7 +9,7 @@ args = {
     'retries': 1,
 }
 
-dag = DAG(
+dag = airflow.models.DAG(
     dag_id='cochrane_reviews',
     default_args=args,
     max_active_runs=1,
@@ -18,7 +18,10 @@ dag = DAG(
 
 collector_task = helpers.create_collector_task(
     name='cochrane_reviews',
-    dag=dag
+    dag=dag,
+    environment={
+        'COCHRANE_ARCHIVE_URL': airflow.models.Variable.get('COCHRANE_ARCHIVE_URL'),
+    }
 )
 
 processor_task = helpers.create_processor_task(
