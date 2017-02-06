@@ -1,5 +1,5 @@
 from datetime import datetime
-from airflow.models import DAG
+import airflow.models
 import utils.helpers as helpers
 
 args = {
@@ -9,7 +9,7 @@ args = {
     'retries': 1,
 }
 
-dag = DAG(
+dag = airflow.models.DAG(
     dag_id='hra',
     default_args=args,
     max_active_runs=1,
@@ -18,7 +18,13 @@ dag = DAG(
 
 collector_task = helpers.create_collector_task(
     name='hra',
-    dag=dag
+    dag=dag,
+    environment={
+        'HRA_ENV': airflow.models.Variable.get('HRA_ENV'),
+        'HRA_URL': airflow.models.Variable.get('HRA_URL'),
+        'HRA_USER': airflow.models.Variable.get('HRA_USER'),
+        'HRA_PASS': airflow.models.Variable.get('HRA_PASS'),
+    }
 )
 
 processor_task = helpers.create_processor_task(
