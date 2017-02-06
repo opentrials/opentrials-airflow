@@ -3,7 +3,7 @@
 all: build start
 
 build:
-	docker build --rm -t okibot/opentrials-airflow . -f Dockerfile
+	docker build --rm -t opentrials/opentrials-airflow . -f Dockerfile
 
 start: stop
 	ansible-playbook ansible/deploy_local.yml -e '@ansible/envs/dev.yml'

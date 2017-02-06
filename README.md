@@ -13,12 +13,12 @@ Use Airflow to author workflows as directed acyclic graphs (DAGs) of tasks. The 
 An Airflow container can be built with 
 
 ```bash
-docker build -t okibot/opentrials-airflow .
+docker build -t opentrials/opentrials-airflow .
 ```
 
 and pushed to Docker hub with
 ```bash
-docker push okibot/opentrials-airflow
+docker push opentrials/opentrials-airflow
 ```
 
 ### Testing

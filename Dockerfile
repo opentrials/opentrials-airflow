@@ -1,10 +1,10 @@
 # AUTHOR: Roberto Vitillo
 # DESCRIPTION: Mozilla's Airflow container
-# BUILD: docker build --rm -t okibot/opentrials-airflow
+# BUILD: docker build --rm -t opentrials/opentrials-airflow
 # SOURCE: https://github.com/opentrials/opentrials-airflow
 
 FROM puckel/docker-airflow:1.7.1.3
-MAINTAINER okibot
+MAINTAINER opentrials
 
 USER root
 RUN apt-get update -yqq && \
