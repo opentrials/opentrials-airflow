@@ -45,7 +45,7 @@ class TestCreateTasks(object):
             task = helpers.create_collector_task('foo', dag)
 
         assert task.task_id == 'collector_foo'
-        assert task.image == 'okibot/collectors:latest'
+        assert task.image == 'opentrials/collectors:latest'
         assert task.force_pull
         assert sorted(task.environment.keys()) == sorted(self.DEFAULT_ENV_KEYS)
 
@@ -63,6 +63,6 @@ class TestCreateTasks(object):
             task = helpers.create_processor_task('foo', dag)
 
         assert task.task_id == 'processor_foo'
-        assert task.image == 'okibot/processors:latest'
+        assert task.image == 'opentrials/processors:latest'
         assert task.force_pull
         assert sorted(task.environment.keys()) == sorted(self.DEFAULT_ENV_KEYS)

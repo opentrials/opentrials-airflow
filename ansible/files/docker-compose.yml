@@ -10,7 +10,7 @@ rabbitmq:
         - RABBITMQ_DEFAULT_VHOST=airflow
 
 webserver:
-    image: okibot/opentrials-airflow
+    image: opentrials/opentrials-airflow
     restart: always
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
@@ -32,7 +32,7 @@ webserver:
     command: webserver
 
 flower:
-    image: okibot/opentrials-airflow
+    image: opentrials/opentrials-airflow
     restart: always
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
@@ -52,7 +52,7 @@ flower:
     command: flower
 
 scheduler:
-    image: okibot/opentrials-airflow
+    image: opentrials/opentrials-airflow
     restart: always
     environment:
         - AIRFLOW_HOME=/usr/local/airflow
@@ -70,7 +70,7 @@ scheduler:
         - rabbitmq:rabbitmq
 
 worker:
-    image: okibot/opentrials-airflow
+    image: opentrials/opentrials-airflow
     restart: always
     ports:
         - "8793:8793"

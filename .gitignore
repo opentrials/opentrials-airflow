@@ -7,3 +7,4 @@ venv
 .tox
 .cache
 TAGS
+.vault_pass
