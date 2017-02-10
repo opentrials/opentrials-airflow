@@ -2,7 +2,7 @@
 *.retry
 *undo-tree~
 *.un~
-venv
+env
 *.swp
 .tox
 .cache
