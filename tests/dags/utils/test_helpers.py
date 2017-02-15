@@ -1,4 +1,7 @@
-import unittest.mock as mock
+try:
+    import unittest.mock as mock
+except ImportError:
+    import mock
 import dags.utils.helpers as helpers
 
 

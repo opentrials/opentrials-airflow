@@ -1,4 +1,7 @@
-import unittest.mock as mock
+try:
+    import unittest.mock as mock
+except ImportError:
+    import mock
 import pytest
 from dags.operators.http_to_s3_transfer import HTTPToS3Transfer
 
