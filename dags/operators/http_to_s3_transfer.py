@@ -87,7 +87,7 @@ def _progress_logger():
     total_bytes = 0
 
     def log_progress(bytes_count):
-        nonlocal total_bytes
+        global total_bytes
         total_bytes += bytes_count
         logging.debug('Downloaded %d bytes', total_bytes)
 
