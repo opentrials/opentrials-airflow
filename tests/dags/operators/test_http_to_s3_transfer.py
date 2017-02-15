@@ -3,7 +3,9 @@ try:
 except ImportError:
     import mock
 import pytest
-from dags.operators.http_to_s3_transfer import HTTPToS3Transfer
+import dags.operators.http_to_s3_transfer
+
+HTTPToS3Transfer = dags.operators.http_to_s3_transfer.HTTPToS3Transfer
 
 
 class TestHTTPToS3Transfer(object):
@@ -84,3 +86,13 @@ class TestHTTPToS3Transfer(object):
         with pytest.raises(KeyError) as excinfo:
             operator.execute(None)
         assert 'aws_secret_access_key' in str(excinfo.value)
+
+    @mock.patch('logging.info')
+    def test_progress_logger(self, logging_mock):
+        progress_logger = dags.operators.http_to_s3_transfer._progress_logger
+
+        logger = progress_logger()
+        logger(50)
+        logger(50)
+
+        logging_mock.assert_called_with(mock.ANY, 100)

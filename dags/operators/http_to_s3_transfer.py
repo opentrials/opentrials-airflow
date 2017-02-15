@@ -84,11 +84,10 @@ class HTTPToS3Transfer(BaseOperator):
 
 def _progress_logger():
     '''Closure to keep track and log the download progress.'''
-    total_bytes = 0
+    closure = {'total': 0}
 
     def log_progress(bytes_count):
-        global total_bytes
-        total_bytes += bytes_count
-        logging.debug('Downloaded %d bytes', total_bytes)
+        closure['total'] += bytes_count
+        logging.info('Downloaded %d bytes', closure['total'])
 
     return log_progress
