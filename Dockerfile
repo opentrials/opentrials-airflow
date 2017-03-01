@@ -8,7 +8,8 @@ MAINTAINER opentrials
 
 USER root
 RUN apt-get update -yqq && \
-    apt-get install -yqq python-pip
+    apt-get install -yqq python-pip && \
+    apt-get install -yqq postgresql-client
 
 ADD requirements.txt /
 RUN pip install -r /requirements.txt
