@@ -6,13 +6,14 @@
     DOCKERCLOUD_USER: "{{ dockercloud_user }}"
     DOCKERCLOUD_PASS: "{{ dockercloud_pass }}"
     DOCKERCLOUD_NAMESPACE: "{{ dockercloud_namespace }}"
+    DOCKERCLOUD_STACK: airflow
 
   tasks:
     - name: create Docker Cloud stack if needed
-      shell: docker-cloud stack inspect airflow || docker-cloud stack create --sync -n airflow
+      shell: docker-cloud stack inspect $DOCKERCLOUD_STACK || docker-cloud stack create --sync -n $DOCKERCLOUD_STACK
 
     - name: launch Airflow containers
-      shell: docker-cloud stack update --sync airflow -f {{ dockercloud_conf }}
+      shell: docker-cloud stack update --sync $DOCKERCLOUD_STACK -f {{ dockercloud_conf }}
       environment:
         DB_URI: "{{ db_uri }}"
         DB_USER: "{{ db_user }}"

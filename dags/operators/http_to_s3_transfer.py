@@ -21,7 +21,7 @@ class HTTPToS3Transfer(BaseOperator):
         with `aws_access_key_id` and `aws_secret_access_key`
     :type s3_conn_id: str
     :param s3_url: S3 url (e.g. `s3://my_bucket/my_key.zip`) (templated)
-    :type s3_bucket: str
+    :type s3_url: str
     '''
     template_fields = ('url', 'url_params', 's3_url')
 
