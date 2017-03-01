@@ -67,6 +67,7 @@ scheduler:
     - SMTP_PASSWORD
   links:
     - rabbitmq
+  command: scheduler
 
 worker:
   image: 'opentrials/opentrials-airflow:latest'
