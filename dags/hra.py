@@ -21,12 +21,12 @@ dag = airflow.models.DAG(
 def _check_hra_api_availability():
     now = datetime.datetime.now()
 
-    is_mon_wed_or_thrusday = (now.weekday() in [0, 2, 3])
+    is_mon_wed_or_thursday = (now.weekday() in [0, 2, 3])
     is_after_6am = (now.time() >= datetime.time(6, 0))
     is_before_8am = (now.time() < datetime.time(8, 0))
     is_between_6am_and_8am = (is_after_6am and is_before_8am)
 
-    return is_mon_wed_or_thrusday and is_between_6am_and_8am
+    return is_mon_wed_or_thursday and is_between_6am_and_8am
 
 
 wait_for_hra_api_availability_sensor = PythonSensor(
