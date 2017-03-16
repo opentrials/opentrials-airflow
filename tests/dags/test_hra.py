@@ -20,6 +20,7 @@ class TestHRA(object):
     ])
     def test_it_waits_for_hra_api_availability(self, current_datetime, result):
         with mock.patch('airflow.models.Variable'):
-            import dags.hra
+            with mock.patch('airflow.hooks.BaseHook'):
+                import dags.hra
         with freezegun.freeze_time(current_datetime):
             assert dags.hra.wait_for_hra_api_availability_sensor.poke(None) is result
