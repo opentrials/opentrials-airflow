@@ -35,7 +35,7 @@ class TestCreateTasks(object):
     DEFAULT_ENV_KEYS = [
         'WAREHOUSE_URL',
         'DATABASE_URL',
-        'EXPLORERDB_URL',
+        'EXPLORER_URL',
         'PYTHON_ENV',
         'LOGGING_URL',
         'DOWNLOAD_DELAY',

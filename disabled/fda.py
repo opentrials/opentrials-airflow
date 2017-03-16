@@ -48,7 +48,7 @@ remove_unknown_documentcloud_docs_task = DockerOperator(
     environment={
         'WAREHOUSE_URL': helpers.get_postgres_uri('warehouse_db'),
         'DATABASE_URL': helpers.get_postgres_uri('api_db'),
-        'EXPLORERDB_URL': helpers.get_postgres_uri('explorer_db'),
+        'EXPLORER_URL': helpers.get_postgres_uri('explorer_db'),
         'LOGGING_URL': Variable.get('LOGGING_URL'),
         'DOCUMENTCLOUD_USERNAME': Variable.get('DOCUMENTCLOUD_USERNAME'),
         'DOCUMENTCLOUD_PASSWORD': Variable.get('DOCUMENTCLOUD_PASSWORD'),

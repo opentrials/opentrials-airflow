@@ -55,7 +55,7 @@ def _create_task(task_id, dag, image, command, environment):
     env = {
         'WAREHOUSE_URL': get_postgres_uri('warehouse_db'),
         'DATABASE_URL': get_postgres_uri('api_db'),
-        'EXPLORERDB_URL': get_postgres_uri('explorer_db'),
+        'EXPLORER_URL': get_postgres_uri('explorer_db'),
         'PYTHON_ENV': airflow.models.Variable.get('ENV'),
         'LOGGING_URL': airflow.models.Variable.get('LOGGING_URL'),
         'DOWNLOAD_DELAY': airflow.models.Variable.get('DOWNLOAD_DELAY'),
