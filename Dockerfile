@@ -8,11 +8,15 @@ MAINTAINER opentrials
 
 USER root
 RUN apt-get update -yqq && \
-    apt-get install -yqq python-pip && \
-    apt-get install -yqq postgresql-client
+    apt-get install -yqq \
+        python-pip \
+        postgresql-client \
+        git
 
 ADD requirements.txt /
-RUN pip install -r /requirements.txt
+RUN pip uninstall airflow -y && \
+    pip install git+git://github.com/opentrials/incubator-airflow.git@opentrials#egg=airflow[crypto,celery,postgres,hive,hdfs,jdbc] && \
+    pip install -r /requirements.txt
 
 ADD ansible/files/airflow/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 ADD ansible/files/airflow/entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh
