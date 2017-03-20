@@ -9,6 +9,7 @@ MAINTAINER opentrials
 USER root
 RUN apt-get update -yqq && \
     apt-get install -yqq \
+        sudo \
         python-pip \
         postgresql-client \
         git
@@ -18,9 +19,9 @@ RUN pip uninstall airflow -y && \
     pip install -r /requirements.txt
 
 ADD ansible/files/airflow/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
-ADD ansible/files/airflow/entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh
 ADD ansible/files/airflow/runner.sh ${AIRFLOW_HOME}/runner.sh
 ADD ansible/files/airflow/replace_env.py ${AIRFLOW_HOME}/replace_env.py
+ADD ansible/files/airflow/entrypoint.sh /entrypoint.sh
 RUN chown airflow:airflow ${AIRFLOW_HOME}/airflow.cfg
 
 ENV AIRFLOW_USER airflow

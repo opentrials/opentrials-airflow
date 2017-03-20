@@ -1,92 +1,74 @@
-rabbitmq:
-    image: rabbitmq:3-management
-    restart: always
-    ports:
-        - "15672:15672"
-        - "5672:5672"
-    environment:
-        - RABBITMQ_DEFAULT_USER=airflow
-        - RABBITMQ_DEFAULT_PASS=airflow
-        - RABBITMQ_DEFAULT_VHOST=airflow
+version: '2'
+services:
+    redis:
+        image: 'redis:3.2.7'
 
-webserver:
-    image: opentrials/opentrials-airflow
-    restart: always
-    environment:
-        - AIRFLOW_HOME=/usr/local/airflow
-        - AIRFLOW_ENABLE_AUTH
-        - FERNET_KEY
-        - DB_URI
-        - DB_USER
-        - DB_PASSWORD
-        - DB_TABLE
-        - SMTP_HOST
-        - SMTP_USER
-        - SMTP_PASSWORD
-    ports:
-        - "8080:8080"
-    links:
-        - rabbitmq:rabbitmq
-        - worker:worker
-        - scheduler:scheduler
-    command: webserver
+    webserver:
+        image: opentrials/opentrials-airflow
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            EXECUTOR: Celery
+            FERNET_KEY:
+            AIRFLOW_ENABLE_AUTH:
+            FERNET_KEY:
+            DB_URI:
+            DB_USER:
+            DB_PASSWORD:
+            DB_TABLE:
+            SMTP_HOST:
+            SMTP_USER:
+            SMTP_PASSWORD:
+        ports:
+            - "8080:8080"
+        command: webserver
 
-flower:
-    image: opentrials/opentrials-airflow
-    restart: always
-    environment:
-        - AIRFLOW_HOME=/usr/local/airflow
-        - AIRFLOW_ENABLE_AUTH
-        - FERNET_KEY
-        - DB_URI
-        - DB_USER
-        - DB_PASSWORD
-        - DB_TABLE
-        - SMTP_HOST
-        - SMTP_USER
-        - SMTP_PASSWORD
-    ports:
-        - "5555:5555"
-    links:
-        - rabbitmq:rabbitmq
-    command: flower
+    flower:
+        image: opentrials/opentrials-airflow
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            EXECUTOR: Celery
+        ports:
+            - "5555:5555"
+        command: flower
 
-scheduler:
-    image: opentrials/opentrials-airflow
-    restart: always
-    environment:
-        - AIRFLOW_HOME=/usr/local/airflow
-        - AIRFLOW_ENABLE_AUTH
-        - FERNET_KEY
-        - COMMAND
-        - DB_URI
-        - DB_USER
-        - DB_PASSWORD
-        - DB_TABLE
-        - SMTP_HOST
-        - SMTP_USER
-        - SMTP_PASSWORD
-    links:
-        - rabbitmq:rabbitmq
+    scheduler:
+        image: opentrials/opentrials-airflow
+        restart: always
+        depends_on:
+            - webserver
+        environment:
+            EXECUTOR: Celery
+            FERNET_KEY:
+            AIRFLOW_ENABLE_AUTH:
+            FERNET_KEY:
+            DB_URI:
+            DB_USER:
+            DB_PASSWORD:
+            DB_TABLE:
+            SMTP_HOST:
+            SMTP_USER:
+            SMTP_PASSWORD:
+        command: ['scheduler', '--num_runs', '10']
 
-worker:
-    image: opentrials/opentrials-airflow
-    restart: always
-    ports:
-        - "8793:8793"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-        - AIRFLOW_HOME=/usr/local/airflow
-        - AIRFLOW_ENABLE_AUTH
-        - FERNET_KEY
-        - DB_URI
-        - DB_USER
-        - DB_PASSWORD
-        - DB_TABLE
-        - SMTP_HOST
-        - SMTP_USER
-        - SMTP_PASSWORD
-    links:
-        - rabbitmq:rabbitmq
-    command: worker
+    worker:
+        image: opentrials/opentrials-airflow
+        restart: always
+        depends_on:
+            - scheduler
+        environment:
+            EXECUTOR: Celery
+            FERNET_KEY:
+            AIRFLOW_ENABLE_AUTH:
+            FERNET_KEY:
+            DB_URI:
+            DB_USER:
+            DB_PASSWORD:
+            DB_TABLE:
+            SMTP_HOST:
+            SMTP_USER:
+            SMTP_PASSWORD:
+        command: worker

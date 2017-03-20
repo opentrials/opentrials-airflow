@@ -1,59 +1,73 @@
 #!/usr/bin/env bash
 
+AIRFLOW_HOME="/usr/local/airflow"
 CMD="airflow"
 TRY_LOOP="10"
 POSTGRES_HOST=${DB_URI:-postgres}
 POSTGRES_PORT="5432"
-RABBITMQ_HOST="rabbitmq"
-RABBITMQ_CREDS="airflow:airflow"
+REDIS_HOST="redis"
+REDIS_PORT="6379"
+: ${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print FERNET_KEY")}
 
-# Wait for RabbitMQ
-j=0
-while ! curl -sI -u $RABBITMQ_CREDS http://$RABBITMQ_HOST:15672/api/whoami |grep '200 OK'; do
-  j=`expr $j + 1`
-  if [ $j -ge $TRY_LOOP ]; then
-    echo "$(date) - $RABBITMQ_HOST still not reachable, giving up"
-    exit 1
-  fi
-  echo "$(date) - waiting for RabbitMQ... $j/$TRY_LOOP"
-  sleep 5
-done
-
-# Generate Fernet key for replacement below
-export DEFAULT_FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print FERNET_KEY")
-export FERNET_KEY=${FERNET_KEY:-$DEFAULT_FERNET_KEY}
-
-# Replace environment vars in airflow config file.
-python $AIRFLOW_HOME/replace_env.py $AIRFLOW_HOME/airflow.cfg
-
-i=0
-while ! nc $POSTGRES_HOST $POSTGRES_PORT >/dev/null 2>&1 < /dev/null; do
-  i=`expr $i + 1`
-  if [ $i -ge $TRY_LOOP ]; then
-    echo "$(date) - ${POSTGRES_HOST}:${POSTGRES_PORT} still not reachable, giving up"
-    exit 1
-  fi
-  echo "$(date) - waiting for ${POSTGRES_HOST}:${POSTGRES_PORT}... $i/$TRY_LOOP"
-  sleep 5
-done
-
-if [ "$1" = "webserver" ]; then
-  echo "Initialize database..."
-  $CMD initdb
-  $CMD upgradedb
+# Load DAGs exemples (default: Yes)
+if [ "x$LOAD_EX" = "xn" ]; then
+    sed -i "s/load_examples = True/load_examples = False/" "$AIRFLOW_HOME"/airflow.cfg
 fi
 
-sleep 5
+# Install custome python package if requirements.txt is present
+if [ -e "/requirements.txt" ]; then
+    $(which pip) install --user -r /requirements.txt
+fi
 
-if [[ "$COMMAND" == "scheduler"* ]]; then
-  # Work around scheduler hangs, see bug 1286825.
-  # Run the scheduler inside a retry loop.
-  while echo "Running"; do
-    eval $CMD "${@:-$COMMAND}"
-    echo "Scheduler exited with code $?.  Respawning.." >&2
-    date >> /tmp/airflow_scheduler_errors.txt
-    sleep 1
+# Replace environment vars in airflow config file
+python $AIRFLOW_HOME/replace_env.py $AIRFLOW_HOME/airflow.cfg
+
+# wait for DB
+if [ "$1" = "webserver" ] || [ "$1" = "worker" ] || [ "$1" = "scheduler" ] ; then
+  i=0
+  while ! nc -z $POSTGRES_HOST $POSTGRES_PORT >/dev/null 2>&1 < /dev/null; do
+    i=$((i+1))
+    if [ $i -ge $TRY_LOOP ]; then
+      echo "$(date) - ${POSTGRES_HOST}:${POSTGRES_PORT} still not reachable, giving up"
+      exit 1
+    fi
+    echo "$(date) - waiting for ${POSTGRES_HOST}:${POSTGRES_PORT}... $i/$TRY_LOOP"
+    sleep 10
   done
+  if [ "$1" = "webserver" ]; then
+    echo "Initialize database..."
+    $CMD initdb
+  fi
+  sleep 5
+fi
+
+# If we use docker-compose, we use Celery.
+if [ "x$EXECUTOR" = "xCelery" ]
+then
+  if [ "$1" = "webserver" ] || [ "$1" = "worker" ] || [ "$1" = "scheduler" ] || [ "$1" = "flower" ] ; then
+    j=0
+    while ! nc -z $REDIS_HOST $REDIS_PORT >/dev/null 2>&1 < /dev/null; do
+      j=$((j+1))
+      if [ $j -ge $TRY_LOOP ]; then
+        echo "$(date) - $REDIS_HOST still not reachable, giving up"
+        exit 1
+      fi
+      echo "$(date) - waiting for Redis... $j/$TRY_LOOP"
+      sleep 5
+    done
+  fi
+  exec $CMD "$@"
+elif [ "x$EXECUTOR" = "xLocal" ]
+then
+  sed -i "s/executor = CeleryExecutor/executor = LocalExecutor/" "$AIRFLOW_HOME"/airflow.cfg
+  exec $CMD "$@"
 else
-  eval $CMD "${@:-$COMMAND}"
+  if [ "$1" = "version" ]; then
+    exec $CMD version
+  fi
+  sed -i "s/executor = CeleryExecutor/executor = SequentialExecutor/" "$AIRFLOW_HOME"/airflow.cfg
+  sed -i "s#sql_alchemy_conn = postgresql+psycopg2://airflow:airflow@postgres/airflow#sql_alchemy_conn = sqlite:////usr/local/airflow/airflow.db#" "$AIRFLOW_HOME"/airflow.cfg
+  echo "Initialize database..."
+  $CMD initdb
+  exec $CMD webserver
 fi

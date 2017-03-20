@@ -13,11 +13,12 @@
         - docker-compose -f {{ compose_conf[0] }} -f {{ compose_conf[1] }} down -v --remove-orphans
         - docker-compose -f {{ compose_conf[0] }} -f {{ compose_conf[1] }} up -d
       environment:
+        AIRFLOW_ENABLE_AUTH: False
+        FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         DB_URI: "{{ db_uri }}"
         DB_USER: "{{ db_user }}"
         DB_PASSWORD: "{{ db_password }}"
         DB_TABLE: "{{ db_table }}"
-        AIRFLOW_ENABLE_AUTH: False
         SMTP_HOST: "localhost"
         SMTP_USER: "dummy"
         SMTP_PASSWORD: "dummy_pass"
