@@ -12,4 +12,4 @@ if [ -S ${DOCKER_SOCKET} ]; then
 fi
 
 # Switch to a non-root user and continue
-su ${AIRFLOW_USER} -c "/usr/bin/env bash $AIRFLOW_HOME/runner.sh ${@}"
+sudo -E -u ${AIRFLOW_USER} -- /usr/bin/env bash $AIRFLOW_HOME/runner.sh ${@}
