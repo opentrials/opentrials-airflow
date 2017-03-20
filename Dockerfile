@@ -3,7 +3,7 @@
 # BUILD: docker build --rm -t opentrials/opentrials-airflow
 # SOURCE: https://github.com/opentrials/opentrials-airflow
 
-FROM puckel/docker-airflow:1.7.1.3
+FROM puckel/docker-airflow:1.7.1.3-7
 MAINTAINER opentrials
 
 USER root
@@ -15,7 +15,6 @@ RUN apt-get update -yqq && \
 
 ADD requirements.txt /
 RUN pip uninstall airflow -y && \
-    pip install git+git://github.com/opentrials/incubator-airflow.git@opentrials#egg=airflow[crypto,celery,postgres,hive,hdfs,jdbc] && \
     pip install -r /requirements.txt
 
 ADD ansible/files/airflow/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
