@@ -69,6 +69,10 @@ make deploy
 This requires the Vault's password file to be located on `./.vault_pass`, so
 Ansible is able to decrypt the production variables.
 
+### Configuration
+
+Our Airflow instance will need a few configuration variables and connections to be able to run the supplied DAGs. Please follow the [CONFIGURATION.md](./CONFIGURATION.md) file in order to know what those variable mean and how to use them.
+
 ### Debugging
 
 Some useful docker tricks for development and debugging:
