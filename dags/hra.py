@@ -51,11 +51,5 @@ processor_task = helpers.create_processor_task(
     dag=dag
 )
 
-hra_linker_task = helpers.create_processor_task(
-    name='hra_linker',
-    dag=dag
-)
-
 collector_task.set_upstream(wait_for_hra_api_availability_sensor)
 processor_task.set_upstream(collector_task)
-hra_linker_task.set_upstream(processor_task)
