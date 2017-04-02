@@ -22,7 +22,7 @@ collector_task = helpers.create_collector_task(
     command='make start pubmed 1900-01-01 2100-01-01'
 )
 
-unregistred_trials_task = helpers.create_processor_task(
+unregistered_trials_task = helpers.create_processor_task(
     name='pubmed_unregistered_trials',
     dag=dag
 )
@@ -32,12 +32,12 @@ trials_remover_task = helpers.create_processor_task(
     dag=dag
 )
 
-publications_task = helpers.create_processor_task(
+pubmed_publications_task = helpers.create_processor_task(
     name='pubmed_publications',
     dag=dag
 )
 
 
-unregistred_trials_task.set_upstream(collector_task)
-trials_remover_task.set_upstream(unregistred_trials_task)
-publications_task.set_upstream(trials_remover_task)
+unregistered_trials_task.set_upstream(collector_task)
+trials_remover_task.set_upstream(unregistered_trials_task)
+pubmed_publications_task.set_upstream(trials_remover_task)
