@@ -20,7 +20,7 @@ class TestHTTPToS3Transfer(object):
 
     @mock.patch('requests.get')
     @mock.patch('boto3.resource')
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_execute_streams_url_data_to_s3(self, get_connection_mock, boto3_mock, get_mock):
         get_connection_mock.return_value = mock.Mock(extra_dejson={
             'aws_access_key_id': 'AWS_ACCESS_KEY_ID',
@@ -53,7 +53,7 @@ class TestHTTPToS3Transfer(object):
             Callback=mock.ANY
         )
 
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_execute_requires_aws_access_key_id_in_connection_extra(self, get_connection_mock):
         get_connection_mock.return_value = mock.Mock(extra_dejson={
             'aws_secret_access_key': 'AWS_SECRET_ACCESS_KEY',
@@ -70,7 +70,7 @@ class TestHTTPToS3Transfer(object):
             operator.execute(None)
         assert 'aws_access_key_id' in str(excinfo.value)
 
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_execute_requires_aws_secret_access_key_in_connection_extra(self, get_connection_mock):
         get_connection_mock.return_value = mock.Mock(extra_dejson={
             'aws_access_key_id': 'AWS_ACCESS_KEY_ID',

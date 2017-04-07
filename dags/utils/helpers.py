@@ -1,4 +1,4 @@
-import airflow.hooks
+import airflow.hooks.base_hook
 from airflow.operators.docker_operator import DockerOperator
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
 import airflow.models
@@ -6,7 +6,7 @@ import os
 
 
 def get_postgres_uri(name):
-    conn = airflow.hooks.BaseHook.get_connection(name)
+    conn = airflow.hooks.base_hook.BaseHook.get_connection(name)
     if not conn:
         return
 

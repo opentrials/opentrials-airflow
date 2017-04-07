@@ -1,4 +1,4 @@
-git+git://github.com/opentrials/incubator-airflow.git@opentrials#egg=airflow[async,password,celery,crypto,postgres,hive,hdfs,jdbc]
+git+git://github.com/apache/incubator-airflow.git@35e43f5067f4741640278b765c0e54e4fd45ffa3#egg=airflow[async,password,celery,crypto,postgres,hive,hdfs,jdbc]
 docker-py==1.10.4
 boto3==1.4.1
 retrying==1.3.3

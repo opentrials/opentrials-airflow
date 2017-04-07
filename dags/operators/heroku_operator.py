@@ -1,6 +1,6 @@
 import airflow.models
 import airflow.exceptions
-import airflow.hooks
+import airflow.hooks.base_hook
 from airflow.utils.decorators import apply_defaults
 
 import re
@@ -46,7 +46,7 @@ class HerokuOperator(airflow.models.BaseOperator):
         self.dyno = None
 
     def execute(self, context):
-        conn = airflow.hooks.BaseHook.get_connection(self.heroku_conn_id)
+        conn = airflow.hooks.base_hook.BaseHook.get_connection(self.heroku_conn_id)
         api_key = conn.password
         self.heroku_conn = heroku3.from_key(api_key)
 

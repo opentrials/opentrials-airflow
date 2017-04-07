@@ -16,10 +16,11 @@ class TestPostgresToS3Transfer(object):
             s3_url='s3://bucket/key'
         )
         assert operator
+        assert operator.task_id == 'task_id'
 
     @mock.patch('subprocess.Popen')
     @mock.patch('boto3.resource', autospec=True)
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_execute_streams_url_data_to_s3(self, get_connection_mock, boto3_mock, popen_mock):
         operator = PostgresToS3Transfer(
             task_id='task_id',
@@ -38,7 +39,7 @@ class TestPostgresToS3Transfer(object):
 
     @mock.patch('subprocess.Popen')
     @mock.patch('boto3.resource', autospec=True)
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_execute_calls_pg_dump_correctly(self, get_connection_mock, boto3_mock, popen_mock):
         operator = PostgresToS3Transfer(
             task_id='task_id',
@@ -58,7 +59,7 @@ class TestPostgresToS3Transfer(object):
 
     @mock.patch('subprocess.Popen')
     @mock.patch('boto3.resource', autospec=True)
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_execute_dumps_only_whitelisted_tables(self, get_connection_mock, boto3_mock, popen_mock):
         tables = [
             'users',

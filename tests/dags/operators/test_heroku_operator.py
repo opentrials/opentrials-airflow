@@ -20,7 +20,7 @@ class TestHerokuOperator(object):
         assert operator.task_id == 'task_id'
 
     @mock.patch('heroku3.from_key')
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_it_uses_the_connection_password_as_api_key(self, get_connection_mock, heroku3_from_key_mock):
         operator = HerokuOperator(
             task_id='task_id',
@@ -38,7 +38,7 @@ class TestHerokuOperator(object):
 
     @mock.patch('heroku3.from_key')
     @mock.patch('logging.info')
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_logs_the_commands_output(self, _, logging_info_mock, heroku3_from_key_mock):
         conn_mock = mock.MagicMock()
         conn_mock.stream_app_log.return_value = [
@@ -63,7 +63,7 @@ class TestHerokuOperator(object):
 
     @mock.patch('heroku3.from_key')
     @mock.patch('logging.info')
-    @mock.patch('airflow.hooks.BaseHook.get_connection')
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
     def test_raises_if_command_is_unsuccessful(self, _, logging_info_mock, heroku3_from_key_mock):
         conn_mock = mock.MagicMock()
         conn_mock.stream_app_log.side_effect = requests.exceptions.ConnectionError()

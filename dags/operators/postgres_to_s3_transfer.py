@@ -3,7 +3,7 @@ import subprocess
 import logging
 import boto3
 
-import airflow.hooks
+import airflow.hooks.base_hook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 import utils.helpers as helpers
@@ -76,7 +76,7 @@ class PostgresToS3Transfer(BaseOperator):
         :return: Boto3 resource
         :rtype: boto3.resources.factory.s3.ServiceResource
         '''
-        conn = airflow.hooks.BaseHook.get_connection(conn_id)
+        conn = airflow.hooks.base_hook.BaseHook.get_connection(conn_id)
         extra_dejson = conn.extra_dejson
         key_id = extra_dejson['aws_access_key_id']
         access_key = extra_dejson['aws_secret_access_key']

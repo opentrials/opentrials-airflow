@@ -8,7 +8,7 @@ import dags.utils.helpers as helpers
 
 
 class TestGetPostgresUriHelper(object):
-    @mock.patch('airflow.hooks.BaseHook')
+    @mock.patch('airflow.hooks.base_hook.BaseHook')
     def test_generates_the_correct_postgres_uri(self, basehook_mock):
         connection_mock = mock.Mock(
             login='login',
@@ -22,7 +22,7 @@ class TestGetPostgresUriHelper(object):
         uri = helpers.get_postgres_uri('connection')
         assert uri == 'postgres://login:password@host:1234/schema'
 
-    @mock.patch('airflow.hooks.BaseHook')
+    @mock.patch('airflow.hooks.base_hook.BaseHook')
     def test_uses_port_5432_by_default(self, basehook_mock):
         connection_mock = mock.Mock(
             port=None
@@ -46,7 +46,7 @@ class TestCreateTasks(object):
 
     def test_create_collector_task_returns_tasks_with_correct_options(self):
         dag = None
-        with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):
+        with mock.patch('airflow.hooks.base_hook.BaseHook'), mock.patch('airflow.models.Variable'):
             task = helpers.create_collector_task('foo', dag)
 
         assert task.task_id == 'collector_foo'
@@ -57,14 +57,14 @@ class TestCreateTasks(object):
     def test_create_collector_task_allows_changing_command(self):
         dag = None
         command = 'sleep'
-        with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):
+        with mock.patch('airflow.hooks.base_hook.BaseHook'), mock.patch('airflow.models.Variable'):
             task = helpers.create_collector_task('foo', dag, command)
 
         assert task.command == command
 
     def test_create_processor_task_returns_tasks_with_correct_options(self):
         dag = None
-        with mock.patch('airflow.hooks.BaseHook'), mock.patch('airflow.models.Variable'):
+        with mock.patch('airflow.hooks.base_hook.BaseHook'), mock.patch('airflow.models.Variable'):
             task = helpers.create_processor_task('foo', dag)
 
         assert task.task_id == 'processor_foo'

@@ -1,5 +1,6 @@
 import datetime
 import airflow
+import airflow.hooks.base_hook
 from airflow.models import DAG
 from operators.postgres_to_s3_transfer import PostgresToS3Transfer
 
@@ -47,7 +48,7 @@ tables_to_dump = [
     'trials_persons',
     'trials_publications',
 ]
-datastore_http = airflow.hooks.BaseHook.get_connection('datastore_http')
+datastore_http = airflow.hooks.base_hook.BaseHook.get_connection('datastore_http')
 DUMP_API_URL = '{base}{endpoint}'.format(
     base=datastore_http.host.replace('http://', 's3://'),
     endpoint='/dumps/opentrials-api-{{ end_date }}.dump'
