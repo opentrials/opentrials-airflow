@@ -2,6 +2,8 @@ try:
     import unittest.mock as mock
 except ImportError:
     import mock
+import datetime
+import airflow.models
 import dags.utils.helpers as helpers
 
 
@@ -69,3 +71,19 @@ class TestCreateTasks(object):
         assert task.image == 'opentrials/processors:latest'
         assert task.force_pull
         assert sorted(task.environment.keys()) == sorted(self.DEFAULT_ENV_KEYS)
+
+
+class TestCreateTriggerSubdagTask(object):
+    def test_creates_task_with_correct_params(self):
+        dag = airflow.models.DAG(
+            dag_id='my_dag',
+            start_date=datetime.datetime(2017, 1, 1)
+        )
+        trigger_dag_id = 'target_dag'
+        trigger_task = helpers.create_trigger_subdag_task(trigger_dag_id, dag)
+
+        expected_task_id = 'trigger_{}_from_{}'.format(trigger_dag_id, dag.dag_id)
+        assert trigger_task is not None
+        assert trigger_task.task_id == expected_task_id
+        assert trigger_task.dag == dag
+        assert trigger_task.trigger_dag_id == trigger_dag_id

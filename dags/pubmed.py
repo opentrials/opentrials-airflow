@@ -37,7 +37,12 @@ pubmed_publications_task = helpers.create_processor_task(
     dag=dag
 )
 
+merge_identifiers_and_reindex_task = helpers.create_trigger_subdag_task(
+    trigger_dag_id='merge_identifiers_and_reindex',
+    dag=dag
+)
 
 unregistered_trials_task.set_upstream(collector_task)
 trials_remover_task.set_upstream(unregistered_trials_task)
 pubmed_publications_task.set_upstream(trials_remover_task)
+merge_identifiers_and_reindex_task.set_upstream(pubmed_publications_task)

@@ -60,11 +60,11 @@ processor_task = helpers.create_processor_task(
     dag=dag
 )
 
-merge_trials_identifiers_task = helpers.create_processor_task(
-    name='merge_trials_identifiers',
+merge_identifiers_and_reindex_task = helpers.create_trigger_subdag_task(
+    trigger_dag_id='merge_identifiers_and_reindex',
     dag=dag
 )
 
 collector_task.set_upstream(nct_xml_dump_sensor)
 processor_task.set_upstream(collector_task)
-merge_trials_identifiers_task.set_upstream(processor_task)
+merge_identifiers_and_reindex_task.set_upstream(processor_task)

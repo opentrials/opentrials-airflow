@@ -1,5 +1,6 @@
 import airflow.hooks
 from airflow.operators.docker_operator import DockerOperator
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 import airflow.models
 import os
 
@@ -16,6 +17,21 @@ def get_postgres_uri(name):
         host=conn.host,
         port=conn.port or 5432,
         schema=conn.schema
+    )
+
+
+def create_trigger_subdag_task(trigger_dag_id, dag):
+    def _always_trigger(context, dag_run_obj):
+        return dag_run_obj
+
+    return TriggerDagRunOperator(
+        task_id='trigger_{trigger}_from_{dag}'.format(
+            trigger=trigger_dag_id,
+            dag=dag.dag_id
+        ),
+        dag=dag,
+        trigger_dag_id=trigger_dag_id,
+        python_callable=_always_trigger
     )
 
 
