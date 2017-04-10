@@ -2,6 +2,7 @@ import datetime
 import airflow
 import airflow.hooks.base_hook
 from airflow.models import DAG
+from airflow.operators.latest_only_operator import LatestOnlyOperator
 from operators.postgres_to_s3_transfer import PostgresToS3Transfer
 
 args = {
@@ -17,6 +18,11 @@ dag = DAG(
     default_args=args,
     max_active_runs=1,
     schedule_interval='@monthly'
+)
+
+latest_only_task = LatestOnlyOperator(
+    task_id='latest_only',
+    dag=dag,
 )
 
 tables_to_dump = [
@@ -61,3 +67,5 @@ dump_api_database = PostgresToS3Transfer(
     s3_conn_id='datastore_s3',
     s3_url=DUMP_API_URL
 )
+
+dump_api_database.set_upstream(latest_only_task)

@@ -1,7 +1,7 @@
 import datetime
-import airflow.operators.sensors
 import airflow.hooks.base_hook
 from airflow.models import DAG
+from airflow.operators.latest_only_operator import LatestOnlyOperator
 import utils.helpers as helpers
 from operators.http_to_s3_transfer import HTTPToS3Transfer
 
@@ -28,6 +28,11 @@ NCT_DATA_URL = '{base}{endpoint}'.format(
     endpoint=S3_URL_ENDPOINT
 )
 
+latest_only_task = LatestOnlyOperator(
+    task_id='latest_only',
+    dag=dag,
+)
+
 save_nct_xml_to_s3_task = HTTPToS3Transfer(
     task_id='save_nct_xml_to_s3',
     dag=dag,
@@ -39,15 +44,6 @@ save_nct_xml_to_s3_task = HTTPToS3Transfer(
     },
     s3_conn_id='datastore_s3',
     s3_url=NCT_DATA_URL.replace('http://', 's3://'),
-)
-
-# FIXME: This should be a S3Sensor, but I have issues with it, so we need to
-# use HTTP for now. See https://issues.apache.org/jira/browse/AIRFLOW-115.
-nct_xml_dump_sensor = airflow.operators.sensors.HttpSensor(
-    task_id='nct_xml_dump_sensor',
-    dag=dag,
-    http_conn_id=HTTP_CONN_ID,
-    endpoint=S3_URL_ENDPOINT
 )
 
 collector_task = helpers.create_collector_task(
@@ -66,6 +62,7 @@ merge_identifiers_and_reindex_task = helpers.create_trigger_subdag_task(
     dag=dag
 )
 
-collector_task.set_upstream(nct_xml_dump_sensor)
+save_nct_xml_to_s3_task.set_upstream(latest_only_task)
+collector_task.set_upstream(save_nct_xml_to_s3_task)
 processor_task.set_upstream(collector_task)
 merge_identifiers_and_reindex_task.set_upstream(processor_task)
