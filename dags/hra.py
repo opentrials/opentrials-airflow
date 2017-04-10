@@ -1,5 +1,6 @@
 import datetime
 import airflow.models
+from airflow.operators.latest_only_operator import LatestOnlyOperator
 import utils.helpers as helpers
 from operators.python_sensor import PythonSensor
 
@@ -15,6 +16,11 @@ dag = airflow.models.DAG(
     default_args=args,
     max_active_runs=1,
     schedule_interval='@monthly'
+)
+
+latest_only_task = LatestOnlyOperator(
+    task_id='latest_only',
+    dag=dag,
 )
 
 
@@ -51,5 +57,6 @@ processor_task = helpers.create_processor_task(
     dag=dag
 )
 
+wait_for_hra_api_availability_sensor.set_upstream(latest_only_task)
 collector_task.set_upstream(wait_for_hra_api_availability_sensor)
 processor_task.set_upstream(collector_task)

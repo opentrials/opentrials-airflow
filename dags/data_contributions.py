@@ -1,5 +1,6 @@
 import datetime
 from airflow.models import DAG
+from airflow.operators.latest_only_operator import LatestOnlyOperator
 import utils.helpers as helpers
 
 args = {
@@ -17,7 +18,14 @@ dag = DAG(
     schedule_interval='@daily'
 )
 
+latest_only_task = LatestOnlyOperator(
+    task_id='latest_only',
+    dag=dag,
+)
+
 data_contributions_processor_task = helpers.create_processor_task(
     name='data_contributions',
     dag=dag
 )
+
+data_contributions_processor_task.set_upstream(latest_only_task)
