@@ -5,14 +5,18 @@ import airflow.models
 
 class TestDAGS(object):
     def test_it_can_be_imported(self, dagbag):
+        # The error messages in Airflow 1.8 look like "u'Error message'", so we
+        # clean them before checking what they are.
+        clear_exc_message = lambda err: err.strip("u'")  # noqa: E731
+
         is_sql_error = lambda err: err.startswith('(sqlite3.OperationalError)')  # noqa: E731
         is_conn_error = lambda err: err.startswith('The conn_id')  # noqa: E731
         is_variable_error = lambda err: err.startswith('Variable ')  # noqa: E731
         import_errors = [
             error for error in dagbag.import_errors.values()
-            if (not is_sql_error(error) and
-                not is_conn_error(error) and
-                not is_variable_error(error))
+            if (not is_sql_error(clear_exc_message(error)) and
+                not is_conn_error(clear_exc_message(error)) and
+                not is_variable_error(clear_exc_message(error)))
         ]
 
         assert not import_errors

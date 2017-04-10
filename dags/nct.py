@@ -1,5 +1,6 @@
 import datetime
 import airflow.operators.sensors
+import airflow.hooks.base_hook
 from airflow.models import DAG
 import utils.helpers as helpers
 from operators.http_to_s3_transfer import HTTPToS3Transfer
@@ -20,7 +21,7 @@ dag = DAG(
 )
 
 HTTP_CONN_ID = 'datastore_http'
-S3_BASE_URL = airflow.hooks.BaseHook.get_connection(HTTP_CONN_ID).host
+S3_BASE_URL = airflow.hooks.base_hook.BaseHook.get_connection(HTTP_CONN_ID).host
 S3_URL_ENDPOINT = '/dumps/sources/nct_2001-01-01_{{ end_date }}.zip'
 NCT_DATA_URL = '{base}{endpoint}'.format(
     base=S3_BASE_URL,
@@ -60,11 +61,11 @@ processor_task = helpers.create_processor_task(
     dag=dag
 )
 
-merge_trials_identifiers_task = helpers.create_processor_task(
-    name='merge_trials_identifiers',
+merge_identifiers_and_reindex_task = helpers.create_trigger_subdag_task(
+    trigger_dag_id='merge_identifiers_and_reindex',
     dag=dag
 )
 
 collector_task.set_upstream(nct_xml_dump_sensor)
 processor_task.set_upstream(collector_task)
-merge_trials_identifiers_task.set_upstream(processor_task)
+merge_identifiers_and_reindex_task.set_upstream(processor_task)
