@@ -12,7 +12,7 @@
     - name: create Docker Cloud stack if needed
       shell: docker-cloud stack inspect $DOCKERCLOUD_STACK || docker-cloud stack create --sync -n $DOCKERCLOUD_STACK
 
-    - name: launch Airflow containers
+    - name: update Docker Cloud stack
       shell: docker-cloud stack update --sync $DOCKERCLOUD_STACK -f {{ dockercloud_conf }}
       environment:
         DB_URI: "{{ db_uri }}"
@@ -24,3 +24,6 @@
         SMTP_USER: "{{ smtp_user }}"
         SMTP_PASSWORD: "{{ smtp_password }}"
         FERNET_KEY: "{{ fernet_key }}"
+
+    - name: redeploy Airflow
+      shell: docker-cloud stack redeploy $DOCKERCLOUD_STACK
