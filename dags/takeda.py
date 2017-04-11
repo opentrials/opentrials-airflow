@@ -6,7 +6,7 @@ import utils.helpers as helpers
 args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.datetime.utcnow(),
+    'start_date': datetime.datetime(2017, 4, 1),
     'retries': 1,
 }
 
