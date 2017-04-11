@@ -1,13 +1,6 @@
-rabbitmq:
-  image: 'rabbitmq:3-management'
+redis:
+  image: 'redis:3.2.7'
   restart: always
-  ports:
-    - '5672:5672'
-    - '15672:15672'
-  environment:
-    - RABBITMQ_DEFAULT_PASS=airflow
-    - RABBITMQ_DEFAULT_USER=airflow
-    - RABBITMQ_DEFAULT_VHOST=airflow
 
 webserver:
   image: 'opentrials/opentrials-airflow:latest'
@@ -15,6 +8,7 @@ webserver:
   environment:
     - AIRFLOW_HOME=/usr/local/airflow
     - AIRFLOW_ENABLE_AUTH=true
+    - EXECUTOR=Celery
     - FERNET_KEY
     - DB_URI
     - DB_USER
@@ -26,9 +20,7 @@ webserver:
   ports:
     - '80:8080'
   links:
-    - rabbitmq
-    - scheduler
-    - worker
+    - redis
   command: webserver
 
 flower:
@@ -37,6 +29,7 @@ flower:
   environment:
     - AIRFLOW_HOME=/usr/local/airflow
     - AIRFLOW_ENABLE_AUTH=true
+    - EXECUTOR=Celery
     - FERNET_KEY
     - DB_URI
     - DB_USER
@@ -46,7 +39,7 @@ flower:
     - SMTP_USER
     - SMTP_PASSWORD
   links:
-    - rabbitmq
+    - redis
   ports:
     - '5555:5555'
   command: flower
@@ -57,6 +50,7 @@ scheduler:
   environment:
     - AIRFLOW_HOME=/usr/local/airflow
     - AIRFLOW_ENABLE_AUTH=true
+    - EXECUTOR=Celery
     - FERNET_KEY
     - DB_URI
     - DB_USER
@@ -66,7 +60,7 @@ scheduler:
     - SMTP_USER
     - SMTP_PASSWORD
   links:
-    - rabbitmq
+    - redis
   command: scheduler
 
 worker:
@@ -79,6 +73,7 @@ worker:
   environment:
     - AIRFLOW_HOME=/usr/local/airflow
     - AIRFLOW_ENABLE_AUTH=true
+    - EXECUTOR=Celery
     - FERNET_KEY
     - DB_URI
     - DB_USER
@@ -88,5 +83,5 @@ worker:
     - SMTP_USER
     - SMTP_PASSWORD
   links:
-    - rabbitmq
+    - redis
   command: worker
