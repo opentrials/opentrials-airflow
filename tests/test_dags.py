@@ -1,3 +1,7 @@
+try:
+    import unittest.mock as mock
+except ImportError:
+    import mock
 import os
 import pytest
 import airflow.models
@@ -20,6 +24,29 @@ class TestDAGS(object):
         ]
 
         assert not import_errors
+
+    @mock.patch('airflow.hooks.base_hook.BaseHook.get_connection')
+    @mock.patch('airflow.models.Variable')
+    def test_start_dates_are_set_to_constant_values(self, _, __):
+        # This doesn't guarantee the time isn't set to `utcnow()` or similar,
+        # but is a close approximate.
+        is_static_time = lambda time: time.microsecond == 0  # noqa: E731
+        the_dagbag = dagbag()
+
+        assert not the_dagbag.import_errors
+
+        for dag in the_dagbag.dags.values():
+            for task in dag.tasks:
+                start_date = task.start_date
+                if start_date:
+                    msg = (
+                        'You should always set the "start_date" to a static'
+                        ' time (DAG: {dag}, task: {task}).'
+                    ).format(
+                        dag=dag.dag_id,
+                        task=task.task_id
+                    )
+                    assert is_static_time(start_date), msg
 
 
 @pytest.fixture
