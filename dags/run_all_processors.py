@@ -33,6 +33,7 @@ PROCESSORS = [
     'euctr',
     'hra',
     'ictrp',
+    'isrctn',
 ]
 for processor in PROCESSORS:
     processor_task = helpers.create_processor_task(
