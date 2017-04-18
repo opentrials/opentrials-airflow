@@ -10,7 +10,6 @@ services:
             - redis
         environment:
             EXECUTOR: Celery
-            FERNET_KEY:
             AIRFLOW_ENABLE_AUTH:
             FERNET_KEY:
             DB_URI:
@@ -31,6 +30,15 @@ services:
             - redis
         environment:
             EXECUTOR: Celery
+            AIRFLOW_ENABLE_AUTH:
+            FERNET_KEY:
+            DB_URI:
+            DB_USER:
+            DB_PASSWORD:
+            DB_TABLE:
+            SMTP_HOST:
+            SMTP_USER:
+            SMTP_PASSWORD:
         ports:
             - "5555:5555"
         command: flower
@@ -42,7 +50,6 @@ services:
             - webserver
         environment:
             EXECUTOR: Celery
-            FERNET_KEY:
             AIRFLOW_ENABLE_AUTH:
             FERNET_KEY:
             DB_URI:
@@ -61,7 +68,6 @@ services:
             - scheduler
         environment:
             EXECUTOR: Celery
-            FERNET_KEY:
             AIRFLOW_ENABLE_AUTH:
             FERNET_KEY:
             DB_URI:
