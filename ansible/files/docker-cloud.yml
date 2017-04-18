@@ -6,9 +6,8 @@ webserver:
   image: 'opentrials/opentrials-airflow:latest'
   restart: always
   environment:
-    - AIRFLOW_HOME=/usr/local/airflow
-    - AIRFLOW_ENABLE_AUTH=true
     - EXECUTOR=Celery
+    - AIRFLOW_ENABLE_AUTH
     - FERNET_KEY
     - DB_URI
     - DB_USER
@@ -27,9 +26,8 @@ flower:
   image: 'opentrials/opentrials-airflow:latest'
   restart: always
   environment:
-    - AIRFLOW_HOME=/usr/local/airflow
-    - AIRFLOW_ENABLE_AUTH=true
     - EXECUTOR=Celery
+    - AIRFLOW_ENABLE_AUTH
     - FERNET_KEY
     - DB_URI
     - DB_USER
@@ -48,9 +46,8 @@ scheduler:
   image: 'opentrials/opentrials-airflow:latest'
   restart: always
   environment:
-    - AIRFLOW_HOME=/usr/local/airflow
-    - AIRFLOW_ENABLE_AUTH=true
     - EXECUTOR=Celery
+    - AIRFLOW_ENABLE_AUTH
     - FERNET_KEY
     - DB_URI
     - DB_USER
@@ -71,9 +68,8 @@ worker:
   volumes:
     - '/var/run/docker.sock:/var/run/docker.sock'
   environment:
-    - AIRFLOW_HOME=/usr/local/airflow
-    - AIRFLOW_ENABLE_AUTH=true
     - EXECUTOR=Celery
+    - AIRFLOW_ENABLE_AUTH
     - FERNET_KEY
     - DB_URI
     - DB_USER
