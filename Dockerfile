@@ -26,6 +26,6 @@ ADD ansible/files/airflow/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 ADD ansible/files/airflow/runner.sh ${AIRFLOW_HOME}/runner.sh
 ADD ansible/files/airflow/replace_env.py ${AIRFLOW_HOME}/replace_env.py
 ADD ansible/files/airflow/entrypoint.sh /entrypoint.sh
-RUN chown ${AIRFLOW_USER}:${AIRFLOW_USER} ${AIRFLOW_HOME}/airflow.cfg
+RUN chown ${AIRFLOW_USER}:${AIRFLOW_USER} -R ${AIRFLOW_HOME}
 
 ADD dags/ ${AIRFLOW_HOME}/dags/
