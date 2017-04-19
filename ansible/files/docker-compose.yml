@@ -64,6 +64,8 @@ services:
     worker:
         image: opentrials/opentrials-airflow
         restart: always
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
         depends_on:
             - scheduler
         environment:
