@@ -57,7 +57,7 @@ tables_to_dump = [
 datastore_http = airflow.hooks.base_hook.BaseHook.get_connection('datastore_http')
 DUMP_API_URL = '{base}{endpoint}'.format(
     base=datastore_http.host.replace('http://', 's3://'),
-    endpoint='/dumps/opentrials-api-{{ end_date }}.dump'
+    endpoint='/public/opentrials-api-{{ end_date }}.dump'
 )
 dump_api_database = PostgresToS3Transfer(
     task_id='dump_api_database',
