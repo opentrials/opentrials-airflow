@@ -13,6 +13,7 @@
         - docker-compose -f {{ compose_conf[0] }} -f {{ compose_conf[1] }} down -v --remove-orphans
         - docker-compose -f {{ compose_conf[0] }} -f {{ compose_conf[1] }} up -d
       environment:
+        EXECUTOR: Local
         AIRFLOW_ENABLE_AUTH: False
         FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         REMOTE_BASE_LOG_FOLDER: "{{ remote_base_log_folder }}"

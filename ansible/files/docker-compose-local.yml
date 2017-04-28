@@ -19,11 +19,3 @@ services:
   scheduler:
       links:
           - postgres:postgres
-
-  worker:
-      links:
-          - postgres:postgres
-
-  flower:
-      links:
-          - postgres:postgres

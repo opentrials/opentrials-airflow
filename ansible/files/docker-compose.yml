@@ -1,15 +1,10 @@
 version: '2'
 services:
-    redis:
-        image: 'redis:3.2.7'
-
     webserver:
         image: opentrials/opentrials-airflow
         restart: always
-        depends_on:
-            - redis
         environment:
-            EXECUTOR: Celery
+            EXECUTOR:
             AIRFLOW_ENABLE_AUTH:
             REMOTE_BASE_LOG_FOLDER:
             REMOTE_LOG_CONN_ID:
@@ -25,35 +20,15 @@ services:
             - "8080:8080"
         command: webserver
 
-    flower:
-        image: opentrials/opentrials-airflow
-        restart: always
-        depends_on:
-            - redis
-        environment:
-            EXECUTOR: Celery
-            AIRFLOW_ENABLE_AUTH:
-            REMOTE_BASE_LOG_FOLDER:
-            REMOTE_LOG_CONN_ID:
-            FERNET_KEY:
-            DB_URI:
-            DB_USER:
-            DB_PASSWORD:
-            DB_TABLE:
-            SMTP_HOST:
-            SMTP_USER:
-            SMTP_PASSWORD:
-        ports:
-            - "5555:5555"
-        command: flower
-
     scheduler:
         image: opentrials/opentrials-airflow
         restart: always
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
         depends_on:
             - webserver
         environment:
-            EXECUTOR: Celery
+            EXECUTOR:
             AIRFLOW_ENABLE_AUTH:
             REMOTE_BASE_LOG_FOLDER:
             REMOTE_LOG_CONN_ID:
@@ -66,25 +41,3 @@ services:
             SMTP_USER:
             SMTP_PASSWORD:
         command: ['scheduler', '--num_runs', '10']
-
-    worker:
-        image: opentrials/opentrials-airflow
-        restart: always
-        volumes:
-            - '/var/run/docker.sock:/var/run/docker.sock'
-        depends_on:
-            - scheduler
-        environment:
-            EXECUTOR: Celery
-            AIRFLOW_ENABLE_AUTH:
-            REMOTE_BASE_LOG_FOLDER:
-            REMOTE_LOG_CONN_ID:
-            FERNET_KEY:
-            DB_URI:
-            DB_USER:
-            DB_PASSWORD:
-            DB_TABLE:
-            SMTP_HOST:
-            SMTP_USER:
-            SMTP_PASSWORD:
-        command: worker
