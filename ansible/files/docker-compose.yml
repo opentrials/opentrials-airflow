@@ -11,6 +11,8 @@ services:
         environment:
             EXECUTOR: Celery
             AIRFLOW_ENABLE_AUTH:
+            REMOTE_BASE_LOG_FOLDER:
+            REMOTE_LOG_CONN_ID:
             FERNET_KEY:
             DB_URI:
             DB_USER:
@@ -31,6 +33,8 @@ services:
         environment:
             EXECUTOR: Celery
             AIRFLOW_ENABLE_AUTH:
+            REMOTE_BASE_LOG_FOLDER:
+            REMOTE_LOG_CONN_ID:
             FERNET_KEY:
             DB_URI:
             DB_USER:
@@ -51,6 +55,8 @@ services:
         environment:
             EXECUTOR: Celery
             AIRFLOW_ENABLE_AUTH:
+            REMOTE_BASE_LOG_FOLDER:
+            REMOTE_LOG_CONN_ID:
             FERNET_KEY:
             DB_URI:
             DB_USER:
@@ -71,6 +77,8 @@ services:
         environment:
             EXECUTOR: Celery
             AIRFLOW_ENABLE_AUTH:
+            REMOTE_BASE_LOG_FOLDER:
+            REMOTE_LOG_CONN_ID:
             FERNET_KEY:
             DB_URI:
             DB_USER:
