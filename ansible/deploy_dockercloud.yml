@@ -15,13 +15,14 @@
     - name: update Docker Cloud stack
       shell: docker-cloud stack update --sync $DOCKERCLOUD_STACK -f {{ dockercloud_conf }}
       environment:
+        EXECUTOR: Local
+        AIRFLOW_ENABLE_AUTH: True
         REMOTE_BASE_LOG_FOLDER: "{{ remote_base_log_folder }}"
         REMOTE_LOG_CONN_ID: "{{ remote_log_conn_id }}"
         DB_URI: "{{ db_uri }}"
         DB_USER: "{{ db_user }}"
         DB_PASSWORD: "{{ db_password }}"
         DB_TABLE: "{{ db_table }}"
-        AIRFLOW_ENABLE_AUTH: True
         SMTP_HOST: "{{ smtp_host }}"
         SMTP_USER: "{{ smtp_user }}"
         SMTP_PASSWORD: "{{ smtp_password }}"
