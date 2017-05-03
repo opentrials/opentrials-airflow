@@ -6,6 +6,7 @@ services:
         environment:
             EXECUTOR:
             AIRFLOW_ENABLE_AUTH:
+            STATSD_ENABLED:
             REMOTE_BASE_LOG_FOLDER:
             REMOTE_LOG_CONN_ID:
             FERNET_KEY:
@@ -30,6 +31,7 @@ services:
         environment:
             EXECUTOR:
             AIRFLOW_ENABLE_AUTH:
+            STATSD_ENABLED:
             REMOTE_BASE_LOG_FOLDER:
             REMOTE_LOG_CONN_ID:
             FERNET_KEY:

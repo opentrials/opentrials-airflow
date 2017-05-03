@@ -4,6 +4,7 @@ webserver:
   environment:
     - EXECUTOR
     - AIRFLOW_ENABLE_AUTH
+    - STATSD_ENABLED
     - REMOTE_BASE_LOG_FOLDER
     - REMOTE_LOG_CONN_ID
     - FERNET_KEY
@@ -16,6 +17,8 @@ webserver:
     - SMTP_PASSWORD
   ports:
     - '80:8080'
+  links:
+    - datadog-agent:statsd
   command: webserver
 
 scheduler:
@@ -26,6 +29,7 @@ scheduler:
   environment:
     - EXECUTOR
     - AIRFLOW_ENABLE_AUTH
+    - STATSD_ENABLED
     - REMOTE_BASE_LOG_FOLDER
     - REMOTE_LOG_CONN_ID
     - FERNET_KEY
@@ -36,4 +40,19 @@ scheduler:
     - SMTP_HOST
     - SMTP_USER
     - SMTP_PASSWORD
+  links:
+    - datadog-agent:statsd
   command: scheduler
+
+datadog-agent:
+  image: 'datadog/docker-dd-agent:latest'
+  restart: always
+  privileged: true
+  volumes:
+    - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    - '/proc:/host/proc:ro'
+    - '/cgroup:/host/sys/fs/cgroup:ro'
+  environment:
+    - DD_API_KEY
+    - DD_HOSTNAME
+    - NON_LOCAL_TRAFFIC

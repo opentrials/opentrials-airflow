@@ -17,6 +17,7 @@
       environment:
         EXECUTOR: Local
         AIRFLOW_ENABLE_AUTH: True
+        STATSD_ENABLED: True
         REMOTE_BASE_LOG_FOLDER: "{{ remote_base_log_folder }}"
         REMOTE_LOG_CONN_ID: "{{ remote_log_conn_id }}"
         DB_URI: "{{ db_uri }}"
@@ -27,6 +28,9 @@
         SMTP_USER: "{{ smtp_user }}"
         SMTP_PASSWORD: "{{ smtp_password }}"
         FERNET_KEY: "{{ fernet_key }}"
+        DD_API_KEY: "{{ datadog_api_key }}"
+        DD_HOSTNAME: opentrials-airflow
+        NON_LOCAL_TRAFFIC: True
 
     - name: redeploy Airflow
       shell: docker-cloud stack redeploy $DOCKERCLOUD_STACK

@@ -15,6 +15,7 @@
       environment:
         EXECUTOR: Local
         AIRFLOW_ENABLE_AUTH: False
+        STATSD_ENABLED: False
         FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
         REMOTE_BASE_LOG_FOLDER: "{{ remote_base_log_folder }}"
         REMOTE_LOG_CONN_ID: "{{ remote_log_conn_id }}"

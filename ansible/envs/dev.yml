@@ -4,5 +4,3 @@ db_password: airflow
 db_table: airflow
 remote_base_log_folder: ""
 remote_log_conn_id: ""
-
-airflow_enable_auth: false
