@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
--e git+git://github.com/apache/incubator-airflow.git@35e43f5067f4741640278b765c0e54e4fd45ffa3#egg=airflow[async,password,celery,redis,crypto,postgres,hive,hdfs,jdbc,s3]
+-e git+git://github.com/apache/incubator-airflow.git@35e43f5067f4741640278b765c0e54e4fd45ffa3#egg=airflow[async,password,celery,redis,crypto,postgres,hive,hdfs,jdbc,s3,statsd]
 alembic==0.8.10
 amqp==2.1.4               # via kombu
 appdirs==1.4.3            # via setuptools
@@ -92,6 +92,7 @@ six==1.10.0               # via bcrypt, bleach, cryptography, docker-py, docker-
 smmap2==2.0.1             # via gitdb2
 snakebite==2.11.0
 sqlalchemy==1.1.9         # via alembic
+statsd==3.2.1
 tabulate==0.7.7
 thrift==0.9.3
 thriftpy==0.3.9           # via impyla
