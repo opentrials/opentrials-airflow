@@ -14,7 +14,7 @@ dag = DAG(
     dag_id='euctr',
     default_args=args,
     max_active_runs=1,
-    schedule_interval='@monthly'
+    schedule_interval='@weekly'
 )
 
 latest_only_task = LatestOnlyOperator(
