@@ -4,6 +4,8 @@ from airflow.operators.dagrun_operator import TriggerDagRunOperator
 import airflow.models
 import os
 
+from operators.docker_cli_operator import DockerCLIOperator
+
 
 def get_postgres_uri(name):
     conn = airflow.hooks.base_hook.BaseHook.get_connection(name)
@@ -64,6 +66,31 @@ def create_processor_task(name, dag, command=None, environment=None):
         image='opentrials/processors:latest',
         command=command or default_command,
         environment=env,
+    )
+
+
+def create_processor_task_using_bash(name, dag, command=None, environment=None):
+    # FIXME: This is a temporary method to try DockerCLIOperator. If everything
+    # works fine, we should remove it and use DockerCLIOperator on "_create_task()"
+    default_command = 'make start {}'.format(name)
+    env = {
+        'SENTRY_DSN': airflow.models.Variable.get('PROCESSOR_SENTRY_DSN'),
+        'WAREHOUSE_URL': get_postgres_uri('warehouse_db'),
+        'DATABASE_URL': get_postgres_uri('api_db'),
+        'EXPLORER_URL': get_postgres_uri('explorer_db'),
+        'PYTHON_ENV': airflow.models.Variable.get('ENV'),
+        'LOGGING_URL': airflow.models.Variable.get('LOGGING_URL'),
+        'DOWNLOAD_DELAY': airflow.models.Variable.get('DOWNLOAD_DELAY'),
+    }
+    env.update(environment or {})
+
+    return DockerCLIOperator(
+        task_id='processor_{}'.format(name),
+        dag=dag,
+        image='opentrials/processors:latest',
+        command=command or default_command,
+        environment=env,
+        force_pull=True,
     )
 
 
