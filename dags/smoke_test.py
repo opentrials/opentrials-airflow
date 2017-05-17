@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timedelta
 from airflow.models import DAG
 from airflow.operators.docker_operator import DockerOperator
+from operators.docker_cli_operator import DockerCLIOperator
 
 
 default_args = {
@@ -25,5 +26,12 @@ sleep_task = DockerOperator(
     dag=dag,
     image='alpine:latest',
     api_version=os.environ.get('DOCKER_API_VERSION', '1.23'),
+    command='sleep 5'
+)
+
+docker_cli_sleep_task = DockerCLIOperator(
+    task_id='docker_cli_sleep',
+    dag=dag,
+    image='alpine:latest',
     command='sleep 5'
 )

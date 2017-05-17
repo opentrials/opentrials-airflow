@@ -12,7 +12,21 @@ RUN apt-get update -yqq && \
         sudo \
         python-pip \
         postgresql-client \
-        git
+        git \
+        # Dependencies needed to install docker-ce
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg2 \
+        software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | \
+    apt-key add -
+RUN add-apt-repository -y \
+    "deb [arch=amd64] https://download.docker.com/linux/debian \
+    $(lsb_release -cs) \
+    stable"
+RUN apt-get update -yqq && \
+    apt-get install -yqq docker-ce
 
 ADD requirements.txt /
 RUN pip uninstall airflow -y && \
