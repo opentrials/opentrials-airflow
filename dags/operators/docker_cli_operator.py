@@ -70,7 +70,8 @@ class DockerCLIOperator(airflow.models.BaseOperator):
     def _get_docker_run_command(self):
         env_params = [
             '--env "{key}=${key}"'.format(key=key)
-            for key in self.environment.keys()
+            for key, value in self.environment.items()
+            if value is not None
         ]
 
         docker_command = [
@@ -85,12 +86,13 @@ class DockerCLIOperator(airflow.models.BaseOperator):
         return ' '.join(docker_command)
 
     def _run_command(self, command, env=None):
+        command = '/bin/bash -c "{command}"'.format(command=command)
         logging.info('Running command "{}"'.format(shlex.split(command)))
         self._process = subprocess.Popen(
             shlex.split(command),
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=env,
+            stderr=subprocess.STDOUT,
+            env=_remove_nulls_and_encode_as_utf8_strings(env),
             preexec_fn=os.setsid
         )
         process = self._process
@@ -111,3 +113,29 @@ class DockerCLIOperator(airflow.models.BaseOperator):
             raise airflow.exceptions.AirflowException(msg)
 
         return process.returncode
+
+
+def _remove_nulls_and_encode_as_utf8_strings(env):
+    '''This prepares the dict to be used as environments in subprocess
+
+    The environment dict passed to subprocess.Popen() can't contain non-string
+    values, and they need to be encoded as byte strings.
+    '''
+    if not hasattr(env, 'items'):
+        return env
+
+    result = {}
+
+    for key, value in env.items():
+        if value is None:
+            continue
+
+        encoded_key = key.encode('utf-8')
+        encoded_value = str(value)
+
+        if hasattr(encoded_value, 'encode'):
+            encoded_value = encoded_value.encode('utf-8')
+
+        result[encoded_key] = encoded_value
+
+    return result

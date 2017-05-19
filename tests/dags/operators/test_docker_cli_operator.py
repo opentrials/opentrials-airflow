@@ -5,6 +5,7 @@ except ImportError:
 import collections
 import io
 import shlex
+import subprocess
 import pytest
 import airflow.exceptions
 from dags.operators.docker_cli_operator import DockerCLIOperator
@@ -64,10 +65,10 @@ class TestDockerCLIOperator(object):
         exit_code = operator._run_command(command, env)
 
         popen_mock.assert_called_with(
-            shlex.split(command),
+            ['/bin/bash', '-c'] + shlex.split(command),
             env=env,
-            stdout=mock.ANY,
-            stderr=mock.ANY,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             preexec_fn=mock.ANY
         )
         logging_info_mock.assert_has_calls([
@@ -110,6 +111,7 @@ class TestDockerCLIOperator(object):
         environment = collections.OrderedDict([
             ('foo', 'bar baz'),
             ('bar', 'foo bar baz'),
+            ('baz', None),
         ])
         operator = DockerCLIOperator(
             task_id='task_id',
