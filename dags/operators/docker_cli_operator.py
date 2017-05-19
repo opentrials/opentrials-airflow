@@ -3,6 +3,7 @@ import airflow.exceptions
 import airflow.hooks.base_hook
 from airflow.utils.decorators import apply_defaults
 
+import copy
 import logging
 import os
 import shlex
@@ -35,15 +36,20 @@ class DockerCLIOperator(airflow.models.BaseOperator):
             command,
             environment=None,
             force_pull=False,
+            api_version=None,
             *args,
             **kwargs
     ):
         super(DockerCLIOperator, self).__init__(*args, **kwargs)
         self.image = image
         self.command = command
-        self.environment = environment or {}
+        self.environment = copy.deepcopy(environment or {})
         self.force_pull = force_pull
+        self.api_version = api_version
         self._process = None
+
+        if self.api_version:
+            self.environment['DOCKER_API_VERSION'] = self.api_version
 
     def execute(self, context):
         if self.force_pull:
@@ -59,7 +65,7 @@ class DockerCLIOperator(airflow.models.BaseOperator):
 
     def _pull_image(self):
         pull_command = 'docker pull {image}'.format(image=self.image)
-        return self._run_command(pull_command)
+        return self._run_command(pull_command, self.environment)
 
     def _get_docker_run_command(self):
         env_params = [

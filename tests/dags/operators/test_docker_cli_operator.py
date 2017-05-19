@@ -22,6 +22,23 @@ class TestDockerCLIOperator(object):
         assert operator
         assert operator.task_id == 'task_id'
 
+    def test_it_adds_DOCKER_API_VERSION_to_environment_if_received_api_version(self):
+        operator = DockerCLIOperator(
+            task_id='task_id',
+            image='docker/image:latest',
+            command='true',
+            api_version='API_VERSION'
+        )
+        assert operator.environment['DOCKER_API_VERSION'] == operator.api_version
+
+    def test_it_does_not_set_DOCKER_API_VERSION_to_environment_if_api_version_is_none(self):
+        operator = DockerCLIOperator(
+            task_id='task_id',
+            image='docker/image:latest',
+            command='true',
+        )
+        assert 'DOCKER_API_OPERATOR' not in operator.environment
+
     @mock.patch('subprocess.Popen', autospec=True)
     @mock.patch('logging.info', autospec=True)
     def test_run_command(self, logging_info_mock, popen_mock):
@@ -118,5 +135,8 @@ class TestDockerCLIOperator(object):
 
         exit_code = operator._pull_image()
 
-        run_command_mock.assert_called_with('docker pull {}'.format(operator.image))
+        run_command_mock.assert_called_with(
+            'docker pull {}'.format(operator.image),
+            operator.environment
+        )
         assert exit_code == run_command_mock()

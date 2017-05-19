@@ -83,6 +83,7 @@ def create_processor_task_using_bash(name, dag, command=None, environment=None):
         'DOWNLOAD_DELAY': airflow.models.Variable.get('DOWNLOAD_DELAY'),
     }
     env.update(environment or {})
+    docker_api_version = os.environ.get('DOCKER_API_VERSION', '1.23')
 
     return DockerCLIOperator(
         task_id='processor_{}'.format(name),
@@ -90,6 +91,7 @@ def create_processor_task_using_bash(name, dag, command=None, environment=None):
         image='opentrials/processors:latest',
         command=command or default_command,
         environment=env,
+        api_version=docker_api_version,
         force_pull=True,
     )
 
