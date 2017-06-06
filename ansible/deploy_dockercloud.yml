@@ -6,7 +6,7 @@
     DOCKERCLOUD_USER: "{{ dockercloud_user }}"
     DOCKERCLOUD_PASS: "{{ dockercloud_pass }}"
     DOCKERCLOUD_NAMESPACE: "{{ dockercloud_namespace }}"
-    DOCKERCLOUD_STACK: airflow
+    DOCKERCLOUD_STACK: airflow-production
 
   tasks:
     - name: create Docker Cloud stack if needed
