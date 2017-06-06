@@ -57,7 +57,7 @@ scheduler:
   links:
     - datadog-agent:statsd
     - redis
-  command: scheduler --num-runs 10
+  command: scheduler --num_runs 10
 
 flower:
   image: 'opentrials/opentrials-airflow:latest'
