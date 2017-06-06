@@ -15,7 +15,7 @@
     - name: update Docker Cloud stack
       shell: docker-cloud stack update --sync $DOCKERCLOUD_STACK -f {{ dockercloud_conf }}
       environment:
-        EXECUTOR: Local
+        EXECUTOR: Celery
         AIRFLOW_ENABLE_AUTH: True
         STATSD_ENABLED: True
         REMOTE_BASE_LOG_FOLDER: "{{ remote_base_log_folder }}"

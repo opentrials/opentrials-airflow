@@ -13,7 +13,7 @@
         - docker-compose -f {{ compose_conf[0] }} -f {{ compose_conf[1] }} down -v --remove-orphans
         - docker-compose -f {{ compose_conf[0] }} -f {{ compose_conf[1] }} up -d
       environment:
-        EXECUTOR: Local
+        EXECUTOR: Celery
         AIRFLOW_ENABLE_AUTH: False
         STATSD_ENABLED: False
         FERNET_KEY: 46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=

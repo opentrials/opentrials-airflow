@@ -1,8 +1,14 @@
 version: '2'
 services:
+    redis:
+      image: 'redis:3.2.7'
+      restart: always
+
     webserver:
-        image: opentrials/opentrials-airflow
+        image: opentrials/opentrials-airflow:latest
         restart: always
+        depends_on:
+            - redis
         environment:
             EXECUTOR:
             AIRFLOW_ENABLE_AUTH:
@@ -18,16 +24,14 @@ services:
             SMTP_USER:
             SMTP_PASSWORD:
         ports:
-            - "8080:8080"
+            - '8080:8080'
         command: webserver
 
     scheduler:
-        image: opentrials/opentrials-airflow
+        image: opentrials/opentrials-airflow:latest
         restart: always
-        volumes:
-            - '/var/run/docker.sock:/var/run/docker.sock'
         depends_on:
-            - webserver
+            - redis
         environment:
             EXECUTOR:
             AIRFLOW_ENABLE_AUTH:
@@ -43,3 +47,51 @@ services:
             SMTP_USER:
             SMTP_PASSWORD:
         command: ['scheduler', '--num_runs', '10']
+
+    flower:
+        image: opentrials/opentrials-airflow:latest
+        restart: always
+        depends_on:
+            - redis
+        environment:
+            EXECUTOR:
+            AIRFLOW_ENABLE_AUTH:
+            STATSD_ENABLED:
+            REMOTE_BASE_LOG_FOLDER:
+            REMOTE_LOG_CONN_ID:
+            FERNET_KEY:
+            DB_URI:
+            DB_USER:
+            DB_PASSWORD:
+            DB_TABLE:
+            SMTP_HOST:
+            SMTP_USER:
+            SMTP_PASSWORD:
+        ports:
+            - '5555:5555'
+        command: flower
+
+    worker:
+        image: opentrials/opentrials-airflow:latest
+        restart: always
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+        depends_on:
+            - scheduler
+        environment:
+            EXECUTOR:
+            AIRFLOW_ENABLE_AUTH:
+            STATSD_ENABLED:
+            REMOTE_BASE_LOG_FOLDER:
+            REMOTE_LOG_CONN_ID:
+            FERNET_KEY:
+            DB_URI:
+            DB_USER:
+            DB_PASSWORD:
+            DB_TABLE:
+            SMTP_HOST:
+            SMTP_USER:
+            SMTP_PASSWORD:
+        ports:
+            - '8793:8793'
+        command: worker

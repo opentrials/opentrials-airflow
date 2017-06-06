@@ -1,21 +1,29 @@
 version: '2'
 services:
   postgres:
-      image: postgres:9.5
-      restart: always
-      volumes:
-          - /var/lib/postgresql/data:/var/lib/postgresql/data
-      ports:
-          - "5432:5432"
-      environment:
-          POSTGRES_USER: airflow
-          POSTGRES_PASSWORD: airflow
-          POSTGRES_DB: airflow
+    image: postgres:9.5
+    restart: always
+    volumes:
+      - /var/lib/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
 
   webserver:
-      links:
-          - postgres:postgres
+    links:
+      - postgres
 
   scheduler:
-      links:
-          - postgres:postgres
+    links:
+      - postgres
+
+  worker:
+    links:
+      - postgres
+
+  flower:
+    links:
+      - postgres
