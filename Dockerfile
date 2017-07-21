@@ -13,6 +13,7 @@ RUN apt-get update -yqq && \
         python-pip \
         postgresql-client \
         git \
+        libssl-dev \
         # Dependencies needed to install docker-ce
         apt-transport-https \
         ca-certificates \
