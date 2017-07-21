@@ -73,11 +73,17 @@ class DockerCLIOperator(airflow.models.BaseOperator):
             for key, value in self.environment.items()
             if value is not None
         ]
+        resource_limits_params = [
+            '--memory=350m',
+            '--cpu-period=100000',
+            '--cpu-quota=50000',
+        ]
 
         docker_command = [
             'docker',
             'run',
             '--rm',
+        ] + resource_limits_params + [
         ] + env_params + [
             self.image,
             self.command,

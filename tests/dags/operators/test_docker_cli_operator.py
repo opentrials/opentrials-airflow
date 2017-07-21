@@ -4,6 +4,7 @@ except ImportError:
     import mock
 import collections
 import io
+import re
 import shlex
 import subprocess
 import pytest
@@ -102,10 +103,12 @@ class TestDockerCLIOperator(object):
 
         docker_command = operator._get_docker_run_command()
 
-        assert docker_command == 'docker run --rm {image} {command}'.format(
+        command_regexp = r'docker run --rm.* {image} {command}'.format(
             image=operator.image,
             command=operator.command
         )
+
+        assert re.match(command_regexp, docker_command, re.IGNORECASE)
 
     def test_get_docker_run_command_works_with_environment(self):
         environment = collections.OrderedDict([
@@ -122,10 +125,11 @@ class TestDockerCLIOperator(object):
 
         docker_command = operator._get_docker_run_command()
 
-        assert docker_command == 'docker run --rm --env "foo=$foo" --env "bar=$bar" {image} {command}'.format(
+        command_regexp = r'^docker run --rm.* --env "foo=\$foo" --env "bar=\$bar".* {image} {command}$'.format(
             image=operator.image,
             command=operator.command
         )
+        assert re.match(command_regexp, docker_command, re.IGNORECASE)
 
     @mock.patch('dags.operators.docker_cli_operator.DockerCLIOperator._run_command')
     def test_pull_image_runs_the_correct_command(self, run_command_mock):
